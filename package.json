@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "expo-image-picker": "^17.0.8",
+    "react-native-paper": "^5.14.5"
+  }
+}

@@ -1,0 +1,519 @@
+{
+  "settings": {
+    "languages": [
+      "en"
+    ],
+    "forceNER": true,
+    "tag": "nlp",
+    "threshold": 0.5,
+    "autoLoad": true,
+    "autoSave": true,
+    "modelFileName": "model.nlp",
+    "executeActionsBeforeAnswers": false,
+    "calculateSentiment": true
+  },
+  "nluManager": {
+    "settings": {
+      "tag": "nlu-manager"
+    },
+    "locales": [
+      "en"
+    ],
+    "languageNames": {},
+    "domainManagers": {
+      "en": {
+        "settings": {
+          "locale": "en",
+          "trainByDomain": false,
+          "tag": "domain-manager-en",
+          "nluByDomain": {
+            "default": {
+              "className": "NeuralNlu",
+              "settings": {}
+            }
+          },
+          "useStemDict": true
+        },
+        "stemDict": {
+          "%product%,a,buy,i,to,want": {
+            "intent": "intent.buy",
+            "domain": "default"
+          },
+          "%product%,a,i,need,new": {
+            "intent": "intent.buy",
+            "domain": "default"
+          },
+          "%product%,a,get,me": {
+            "intent": "intent.buy",
+            "domain": "default"
+          },
+          "%product%,a,find,for,me": {
+            "intent": "intent.buy",
+            "domain": "default"
+          },
+          "%number%,%product%,buy,i,rupe,to,under,want": {
+            "intent": "intent.buy",
+            "domain": "default"
+          },
+          "%number%,%product%,find,for,me": {
+            "intent": "intent.buy",
+            "domain": "default"
+          },
+          "%number%,%product%,a,around,dollar,i,need": {
+            "intent": "intent.buy",
+            "domain": "default"
+          },
+          "%number%,%product%,a,buy,i,new,rupe,to,under,want": {
+            "intent": "intent.buy",
+            "domain": "default"
+          },
+          "%number%,%product%,a,about,for,get,me": {
+            "intent": "intent.buy",
+            "domain": "default"
+          },
+          "%number%,%product%,below,for,look": {
+            "intent": "intent.buy",
+            "domain": "default"
+          },
+          "is,the,today,weather,what": {
+            "intent": "intent.other",
+            "domain": "default"
+          },
+          "a,joke,me,tell": {
+            "intent": "intent.other",
+            "domain": "default"
+          }
+        },
+        "intentDict": {
+          "intent.buy": "default",
+          "intent.other": "default"
+        },
+        "sentences": [
+          {
+            "domain": "default",
+            "utterance": "I want to buy a %product%",
+            "intent": "intent.buy"
+          },
+          {
+            "domain": "default",
+            "utterance": "I need a new %product%",
+            "intent": "intent.buy"
+          },
+          {
+            "domain": "default",
+            "utterance": "get me a %product%",
+            "intent": "intent.buy"
+          },
+          {
+            "domain": "default",
+            "utterance": "find a %product% for me",
+            "intent": "intent.buy"
+          },
+          {
+            "domain": "default",
+            "utterance": "I want to buy %product% under %number% rupees",
+            "intent": "intent.buy"
+          },
+          {
+            "domain": "default",
+            "utterance": "find me %product% for %number%",
+            "intent": "intent.buy"
+          },
+          {
+            "domain": "default",
+            "utterance": "I need a %product% around %number% dollars",
+            "intent": "intent.buy"
+          },
+          {
+            "domain": "default",
+            "utterance": "I want to buy a new %product% under %number% rupees",
+            "intent": "intent.buy"
+          },
+          {
+            "domain": "default",
+            "utterance": "get me a %product% for about %number%",
+            "intent": "intent.buy"
+          },
+          {
+            "domain": "default",
+            "utterance": "looking for %product% below %number%",
+            "intent": "intent.buy"
+          },
+          {
+            "domain": "default",
+            "utterance": "what is the weather today",
+            "intent": "intent.other"
+          },
+          {
+            "domain": "default",
+            "utterance": "tell me a joke",
+            "intent": "intent.other"
+          }
+        ],
+        "domains": {
+          "master_domain": {
+            "settings": {
+              "locale": "en",
+              "tag": "nlu-en",
+              "keepStopwords": true,
+              "nonefeatureValue": 1,
+              "nonedeltaMultiplier": 1.2,
+              "spellCheck": false,
+              "spellCheckDistance": 1,
+              "filterZeros": true,
+              "log": true
+            },
+            "features": {
+              "i": 1,
+              "want": 1,
+              "to": 1,
+              "buy": 1,
+              "a": 1,
+              "%product%": 1,
+              "need": 1,
+              "new": 1,
+              "get": 1,
+              "me": 1,
+              "find": 1,
+              "for": 1,
+              "under": 1,
+              "%number%": 1,
+              "rupe": 1,
+              "around": 1,
+              "dollar": 1,
+              "about": 1,
+              "look": 1,
+              "below": 1,
+              "what": 1,
+              "is": 1,
+              "the": 1,
+              "weather": 1,
+              "today": 1,
+              "tell": 1,
+              "joke": 1
+            },
+            "intents": {
+              "intent.buy": 1,
+              "intent.other": 1
+            },
+            "intentFeatures": {
+              "intent.buy": {
+                "i": 1,
+                "want": 1,
+                "to": 1,
+                "buy": 1,
+                "a": 1,
+                "%product%": 1,
+                "need": 1,
+                "new": 1,
+                "get": 1,
+                "me": 1,
+                "find": 1,
+                "for": 1,
+                "under": 1,
+                "%number%": 1,
+                "rupe": 1,
+                "around": 1,
+                "dollar": 1,
+                "about": 1,
+                "look": 1,
+                "below": 1
+              },
+              "intent.other": {
+                "what": 1,
+                "is": 1,
+                "the": 1,
+                "weather": 1,
+                "today": 1,
+                "tell": 1,
+                "me": 1,
+                "a": 1,
+                "joke": 1
+              }
+            },
+            "featuresToIntent": {
+              "i": [
+                "intent.buy"
+              ],
+              "want": [
+                "intent.buy"
+              ],
+              "to": [
+                "intent.buy"
+              ],
+              "buy": [
+                "intent.buy"
+              ],
+              "a": [
+                "intent.buy",
+                "intent.other"
+              ],
+              "%product%": [
+                "intent.buy"
+              ],
+              "need": [
+                "intent.buy"
+              ],
+              "new": [
+                "intent.buy"
+              ],
+              "get": [
+                "intent.buy"
+              ],
+              "me": [
+                "intent.buy",
+                "intent.other"
+              ],
+              "find": [
+                "intent.buy"
+              ],
+              "for": [
+                "intent.buy"
+              ],
+              "under": [
+                "intent.buy"
+              ],
+              "%number%": [
+                "intent.buy"
+              ],
+              "rupe": [
+                "intent.buy"
+              ],
+              "around": [
+                "intent.buy"
+              ],
+              "dollar": [
+                "intent.buy"
+              ],
+              "about": [
+                "intent.buy"
+              ],
+              "look": [
+                "intent.buy"
+              ],
+              "below": [
+                "intent.buy"
+              ],
+              "what": [
+                "intent.other"
+              ],
+              "is": [
+                "intent.other"
+              ],
+              "the": [
+                "intent.other"
+              ],
+              "weather": [
+                "intent.other"
+              ],
+              "today": [
+                "intent.other"
+              ],
+              "tell": [
+                "intent.other"
+              ],
+              "joke": [
+                "intent.other"
+              ]
+            },
+            "neuralNetwork": {
+              "settings": {
+                "locale": "en",
+                "tag": "nlu-en",
+                "keepStopwords": true,
+                "nonefeatureValue": 1,
+                "nonedeltaMultiplier": 1.2,
+                "spellCheck": false,
+                "spellCheckDistance": 1,
+                "filterZeros": true,
+                "log": true
+              },
+              "features": [
+                "i",
+                "want",
+                "to",
+                "buy",
+                "a",
+                "%product%",
+                "need",
+                "new",
+                "get",
+                "me",
+                "find",
+                "for",
+                "under",
+                "%number%",
+                "rupe",
+                "around",
+                "dollar",
+                "about",
+                "look",
+                "below",
+                "what",
+                "is",
+                "the",
+                "weather",
+                "today",
+                "tell",
+                "joke"
+              ],
+              "intents": [
+                "intent.buy",
+                "intent.other"
+              ],
+              "perceptrons": [
+                [
+                  2.3498969078063965,
+                  0.5700618028640747,
+                  0.5700618028640747,
+                  0.5700618028640747,
+                  0.5981406569480896,
+                  7.3828253746032715,
+                  1.7766667604446411,
+                  -0.2607344090938568,
+                  2.311143398284912,
+                  1.4241634607315063,
+                  1.3080512285232544,
+                  1.2763335704803467,
+                  -0.09491874277591705,
+                  0.43722936511039734,
+                  -0.09491874277591705,
+                  -0.3277166187763214,
+                  -0.3277166187763214,
+                  -1.4384076595306396,
+                  1.4143818616867065,
+                  1.4143818616867065,
+                  -0.46945759654045105,
+                  -0.46945759654045105,
+                  -0.46945759654045105,
+                  -0.46945759654045105,
+                  -0.46945759654045105,
+                  -2.1994144916534424,
+                  -2.1994144916534424,
+                  2.3539095175774856
+                ],
+                [
+                  -0.5854884386062622,
+                  -0.24297815561294556,
+                  -0.24297815561294556,
+                  -0.24297815561294556,
+                  1.3534270524978638,
+                  -3.3252456188201904,
+                  -0.2909969985485077,
+                  -0.2600107491016388,
+                  -1.780321478843689,
+                  1.8804229497909546,
+                  -0.9071674942970276,
+                  -1.151195764541626,
+                  -0.00029009277932345867,
+                  -0.32642707228660583,
+                  -0.00029009277932345867,
+                  -0.016816098242998123,
+                  -0.016816098242998123,
+                  -0.20255880057811737,
+                  0,
+                  0,
+                  2.4824633598327637,
+                  2.4824633598327637,
+                  2.4824633598327637,
+                  2.4824633598327637,
+                  2.4824633598327637,
+                  4.588934898376465,
+                  4.588934898376465,
+                  1.8730640100604896
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "intentDomains": {},
+    "extraSentences": [
+      [
+        "en",
+        "I want to buy a %product%"
+      ],
+      [
+        "en",
+        "I need a new %product%"
+      ],
+      [
+        "en",
+        "get me a %product%"
+      ],
+      [
+        "en",
+        "find a %product% for me"
+      ],
+      [
+        "en",
+        "I want to buy %product% under %number% rupees"
+      ],
+      [
+        "en",
+        "find me %product% for %number%"
+      ],
+      [
+        "en",
+        "I need a %product% around %number% dollars"
+      ],
+      [
+        "en",
+        "I want to buy a new %product% under %number% rupees"
+      ],
+      [
+        "en",
+        "get me a %product% for about %number%"
+      ],
+      [
+        "en",
+        "looking for %product% below %number%"
+      ],
+      [
+        "en",
+        "what is the weather today"
+      ],
+      [
+        "en",
+        "tell me a joke"
+      ]
+    ]
+  },
+  "ner": {
+    "settings": {
+      "tag": "ner",
+      "entityPreffix": "%",
+      "entitySuffix": "%"
+    },
+    "rules": {}
+  },
+  "nlgManager": {
+    "settings": {
+      "tag": "nlg-manager"
+    },
+    "responses": {}
+  },
+  "actionManager": {
+    "settings": {
+      "tag": "action-manager"
+    },
+    "actions": {}
+  },
+  "slotManager": {
+    "intent.buy": {
+      "product": {
+        "intent": "intent.buy",
+        "entity": "product",
+        "mandatory": false,
+        "locales": {}
+      },
+      "number": {
+        "intent": "intent.buy",
+        "entity": "number",
+        "mandatory": false,
+        "locales": {}
+      }
+    }
+  }
+}
