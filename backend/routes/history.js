@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const History = require('../models/History'); // Import the History Mongoose model
 
 router.get('/', async (req, res) => {
-  const { db } = req.app.locals;
   try {
-    const history = await db.collection('history').find({}).sort({ createdAt: -1 }).toArray();
+    // Use the Mongoose model directly
+    const history = await History.find({}).sort({ createdAt: -1 });
     res.json(history);
   } catch (error) {
     console.error('Error fetching history:', error);
@@ -13,3 +14,4 @@ router.get('/', async (req, res) => {
 });
 
 module.exports = router;
+

@@ -1,25 +1,9 @@
 const request = require('supertest');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const { startServer, stopServer } = require('../server');
-const config = require('../config');
+const { app } = require('../server');
 const llmService = require('../utils/llmService');
 
 // Explicitly mock llmService
 jest.mock('../utils/llmService');
-
-let app;
-let mongoServer;
-
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  config.mongoURI = mongoServer.getUri();
-  app = await startServer();
-}, 30000); // Increase timeout for beforeAll
-
-afterAll(async () => {
-  await stopServer();
-  await mongoServer.stop();
-}, 30000); // Increase timeout for afterAll
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -32,6 +16,7 @@ describe('Negotiate API', () => {
   it('POST /negotiate should return a conversational response on success', async () => {
     const mockConversationalResponse = {
       responseText: 'I can offer you a special price of ₹2700!',
+      proposedPrice: 2700
     };
     llmService.generateConversationalNegotiationWithLLM.mockResolvedValue(mockConversationalResponse);
 
@@ -42,13 +27,14 @@ describe('Negotiate API', () => {
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty('responseText');
     expect(res.body.responseText).toBe(mockConversationalResponse.responseText);
+    expect(res.body).toHaveProperty('proposedPrice', mockConversationalResponse.proposedPrice);
     expect(llmService.generateConversationalNegotiationWithLLM).toHaveBeenCalledTimes(1);
     expect(llmService.generateConversationalNegotiationWithLLM).toHaveBeenCalledWith(
       productData,
       2800,
       initialMessages
     );
-  }, 30000);
+  });
 
   it('POST /negotiate should return 400 if product name or price is missing', async () => {
     const res1 = await request(app).post('/negotiate').send({ product: { name: 'Smartwatch' }, budget: 3000, messages: initialMessages }); // Missing price
@@ -59,7 +45,7 @@ describe('Negotiate API', () => {
 
     const res3 = await request(app).post('/negotiate').send({ product: {}, budget: 3000, messages: initialMessages }); // Missing both
     expect(res3.statusCode).toEqual(400);
-  }, 30000);
+  });
 
   it('POST /negotiate should return 400 if messages array is missing or invalid', async () => {
     const res1 = await request(app).post('/negotiate').send({ product: productData, budget: 3000 }); // Missing messages
@@ -69,7 +55,7 @@ describe('Negotiate API', () => {
     const res2 = await request(app).post('/negotiate').send({ product: productData, budget: 3000, messages: 'not an array' }); // Invalid messages
     expect(res2.statusCode).toEqual(400);
     expect(res2.body.error).toContain('A messages array is required.');
-  }, 30000);
+  });
 
   it('POST /negotiate should return 500 if LLM conversational call fails', async () => {
     llmService.generateConversationalNegotiationWithLLM.mockRejectedValue(new Error('LLM API error')); // Simulate LLM failure
@@ -81,5 +67,21 @@ describe('Negotiate API', () => {
     expect(res.statusCode).toEqual(500);
     expect(res.body.error).toBe('Failed to negotiate deal.');
     expect(llmService.generateConversationalNegotiationWithLLM).toHaveBeenCalledTimes(1);
-  }, 30000);
-});
+  });
+  
+  it('POST /negotiate should indicate deal acceptance', async () => {
+    const mockConversationalResponse = {
+      responseText: 'Awesome! Deal accepted!',
+      dealAccepted: true
+    };
+    llmService.generateConversationalNegotiationWithLLM.mockResolvedValue(mockConversationalResponse);
+
+    const res = await request(app)
+      .post('/negotiate')
+      .send({ product: productData, budget: 2800, messages: [{ text: 'I accept', sender: 'user' }] });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty('responseText');
+    expect(res.body.responseText).toBe(mockConversationalResponse.responseText);
+    expect(res.body).toHaveProperty('dealAccepted', true);
+  });

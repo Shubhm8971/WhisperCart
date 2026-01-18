@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "5b1cd429-b4e4-4aac-87a2-e63847ae804d"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.shubhm8971.whispercart",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.shubhm8971.whispercart"
+    }
+  }
+}

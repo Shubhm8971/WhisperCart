@@ -26,6 +26,8 @@ router.post('/', async (req, res) => {
 
     res.json({
       responseText: negotiationResponse.responseText,
+      proposedPrice: negotiationResponse.proposedPrice,
+      dealAccepted: negotiationResponse.dealAccepted
     });
 
   } catch (error) {

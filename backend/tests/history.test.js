@@ -1,31 +1,9 @@
 const request = require('supertest');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const { startServer, stopServer } = require('../server');
-const config = require('../config');
-
-let app;
-let mongoServer;
-let db;
-
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  
-  // Override the config's mongoURI before the server starts
-  config.mongoURI = mongoUri;
-
-  app = await startServer();
-  db = app.locals.db; // Get the db instance from the app
-});
-
-afterAll(async () => {
-  await stopServer();
-  await mongoServer.stop();
-});
+const { app } = require('../server');
+const History = require('../models/History');
 
 beforeEach(async () => {
-  // Clear the history collection before each test
-  await db.collection('history').deleteMany({});
+  await History.deleteMany({});
 });
 
 describe('History API', () => {
@@ -51,7 +29,7 @@ describe('History API', () => {
       createdAt: new Date('2023-01-01T11:00:00Z'),
     };
 
-    await db.collection('history').insertMany([historyItem1, historyItem2]);
+    await History.insertMany([historyItem1, historyItem2]);
 
     const res = await request(app).get('/history');
     expect(res.statusCode).toEqual(200);

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WhisperCart Backend Test</title>
+</head>
+<body>
+    <h1>WhisperCart Registration Test</h1>
+    <form id="registerForm">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit">Register</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        const API_URL = 'http://localhost:3002';
+
+        // Test login function
+        async function testLogin() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<div style="background: #e3f2fd; padding: 20px; border-radius: 8px;"><h3>🔐 Testing Login...</h3></div>';
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'whisper@test.com',
+                        password: 'whisper123'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    result.innerHTML = `
+                        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px;">
+                            <h3 style="color: #2e7d32;">✅ Login Successful!</h3>
+                            <p><strong>Token received:</strong> ${data.token.substring(0, 50)}...</p>
+                            <p>In the real app, you'd now access:</p>
+                            <ul style="text-align: left;">
+                                <li>🏠 Main shopping dashboard</li>
+                                <li>🎤 Voice shopping interface</li>
+                                <li>🔒 Privacy settings</li>
+                                <li>📊 Shopping history</li>
+                            </ul>
+                            <button onclick="testVoiceShopping()" style="background: #ff9800; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px;">Test Voice Shopping 🎤</button>
+                            <button onclick="testProductSearch()" style="background: #4caf50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Test Product Search 🛒</button>
+                        </div>
+                    `;
+                    localStorage.setItem('token', data.token);
+                } else {
+                    result.innerHTML = `<span style="color: red;">❌ Login failed: ${data.error || 'Unknown error'}</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span style="color: red;">❌ Network error: ${error.message}</span>`;
+            }
+        }
+
+        // Test voice shopping
+        async function testVoiceShopping() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<div style="background: #fff3e0; padding: 20px; border-radius: 8px;"><h3>🎤 Testing Voice Shopping...</h3></div>';
+
+            try {
+                const response = await fetch(`${API_URL}/transcribe`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: 'I want to buy Nike running shoes under 5000 rupees'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    result.innerHTML = `
+                        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px;">
+                            <h3 style="color: #2e7d32;">🎤 Voice Shopping Success!</h3>
+                            <p><strong>Detected Intent:</strong></p>
+                            <ul style="text-align: left; background: #f5f5f5; padding: 10px; border-radius: 4px;">
+                                <li><strong>Action:</strong> ${data.action}</li>
+                                <li><strong>Product:</strong> ${data.product}</li>
+                                <li><strong>Budget:</strong> ₹${data.budget}</li>
+                                <li><strong>Features:</strong> ${data.features.join(', ')}</li>
+                            </ul>
+                            <p><em>In the real app, this would show product recommendations with AI-negotiated prices!</em></p>
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = `<span style="color: red;">❌ Voice processing failed</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span style="color: red;">❌ Network error: ${error.message}</span>`;
+            }
+        }
+
+        // Test product search
+        async function testProductSearch() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<div style="background: #e8f5e8; padding: 20px; border-radius: 8px;"><h3>🛒 Testing Product Search...</h3></div>';
+
+            try {
+                const response = await fetch(`${API_URL}/search?product=nike+shoes&budget=5000`);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `
+                        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px;">
+                            <h3 style="color: #2e7d32;">🛒 Product Search Working!</h3>
+                            <p><strong>Search Results:</strong> ${data.length || 'Multiple'} products found</p>
+                            <p><em>In the real app, you'd see product listings with prices, ratings, and purchase links!</em></p>
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = `<span style="color: red;">❌ Product search failed</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span style="color: red;">❌ Network error: ${error.message}</span>`;
+            }
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const result = document.getElementById('result');
+            result.textContent = 'Registering...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        email: document.getElementById('email').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+                
+                const data = await response.json();
+
+                if (response.ok) {
+                    result.innerHTML = `
+                        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                            <h3 style="color: #2e7d32; margin-top: 0;">🎉 Registration Successful!</h3>
+                            <p><strong>Welcome to WhisperCart!</strong></p>
+                            <p>You can now:</p>
+                            <ul style="text-align: left;">
+                                <li>🔊 Use voice shopping: "I want Nike shoes"</li>
+                                <li>🛒 Browse AI-negotiated deals</li>
+                                <li>🔒 Manage privacy settings</li>
+                                <li>📱 Access cross-platform shopping</li>
+                            </ul>
+                            <p><em>In the real app, you'd be logged in and see the main shopping interface.</em></p>
+                            <button onclick="testLogin()" style="background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Test Login →</button>
+                        </div>
+                    `;
+                    console.log('Registration Success:', data);
+                    // Store token for login test
+                    localStorage.setItem('token', data.token);
+                } else {
+                    result.innerHTML = `<span style="color: red;">❌ Registration failed: ${data.error || 'Unknown error'}</span>`;
+                    console.log('Error response:', data);
+                }
+            } catch (error) {
+                result.innerHTML = `<span style="color: red;">❌ Network error: ${error.message}</span>`;
+            }
+        });
+    </script>
+</body>
+</html>

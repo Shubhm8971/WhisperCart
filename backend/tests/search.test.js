@@ -1,25 +1,9 @@
 const request = require('supertest');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const { startServer, stopServer } = require('../server');
-const config = require('../config');
+const { app } = require('../server');
 const amazonService = require('../utils/amazonService');
 
 // Mock amazonService
 jest.mock('../utils/amazonService');
-
-let app;
-let mongoServer;
-
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  config.mongoURI = mongoServer.getUri();
-  app = await startServer();
-});
-
-afterAll(async () => {
-  await stopServer();
-  await mongoServer.stop();
-});
 
 describe('Search API with Amazon PA-API', () => {
   const mockAmazonApiResponse = [
