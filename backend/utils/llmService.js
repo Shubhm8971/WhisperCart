@@ -74,67 +74,265 @@ async function extractIntentWithHuggingFace(text) {
 }
 
 /**
- * Smart Local Intent Engine (Optimized Regex + Logic)
- * Truly free, instant, and surprisingly accurate for a demo.
+ * Enhanced Smart Local Intent Engine (Advanced AI Detection)
+ * Improved with context understanding, purchase intent, and comprehensive categorization
  */
 function fallbackIntentExtraction(text) {
-  console.log('[v7.0] Using Smart Local Engine');
+  console.log('[v8.0] Enhanced AI Detection Engine');
   const lowerText = text.toLowerCase();
 
   let action = 'search';
-  let product = 'Generic Product';
+  let product = null;
   let budget = null;
   let features = [];
   let urgency = 'medium';
+  let context = 'personal'; // personal, gift, work, replacement
+  let purchaseIntent = 'browsing'; // browsing, interested, ready_to_buy, urgent
 
-  // 0. Action Detection
-  if (lowerText.match(/checkout|pay|buy|purchase/)) action = 'checkout';
-  else if (lowerText.match(/wishlist|save|favorite/)) action = 'wishlist';
-  else if (lowerText.match(/clear|empty|delete/)) action = 'clear_cart';
-
-  // 1. Core Category detection (only if action is 'search')
-  if (action === 'search') {
-    if (lowerText.match(/watch|series|apple|galaxy|smartwatch/)) product = 'Smartwatch';
-    else if (lowerText.match(/shoe|sneaker|nike|adidas|puma|running|footwear/)) product = 'Running Shoes';
-    else if (lowerText.match(/croc|clog/)) product = 'Crocs';
-    else if (lowerText.match(/phone|iphone|mobile|smartphone|pixel/)) product = 'Smartphone';
-    else if (lowerText.match(/laptop|macbook|computer|dell|hp/)) product = 'Laptop';
-    else if (lowerText.match(/headphone|buds|sony|bose|audio/)) product = 'Headphones';
-    else if (lowerText.match(/jacket|hoodie|shirt|clothes/)) product = 'Apparel';
-  } else {
-    product = null; // Don't search for products when action is not 'search'
+  // 0. Action Detection (Enhanced)
+  if (lowerText.match(/checkout|pay|buy now|purchase now|order now/)) {
+    action = 'checkout';
+    purchaseIntent = 'ready_to_buy';
+  } else if (lowerText.match(/add to cart|buy|purchase|get it/)) {
+    action = 'checkout';
+    purchaseIntent = 'interested';
+  } else if (lowerText.match(/wishlist|save for later|favorite|bookmark/)) {
+    action = 'wishlist';
+  } else if (lowerText.match(/clear|empty|delete|remove all/)) {
+    action = 'clear_cart';
+  } else if (lowerText.match(/compare|vs|versus|difference/)) {
+    action = 'compare';
   }
 
-  // 2. Brand detection
-  const brands = ['apple', 'samsung', 'nike', 'adidas', 'dell', 'hp', 'sony', 'bose', 'razer', 'crocs', 'puma'];
-  for (const b of brands) {
-    if (lowerText.includes(b)) {
-      brand_preference = b.charAt(0).toUpperCase() + b.slice(1);
+  // Context Detection
+  if (lowerText.match(/gift|birthday|anniversary|present|surprise/)) {
+    context = 'gift';
+  } else if (lowerText.match(/work|office|business|professional|meeting/)) {
+    context = 'work';
+  } else if (lowerText.match(/replace|broken|old one|upgrade|new version/)) {
+    context = 'replacement';
+  }
+
+  // Purchase Intent Analysis
+  if (lowerText.match(/need it now|urgent|emergency|asap|immediately/)) {
+    purchaseIntent = 'urgent';
+    urgency = 'high';
+  } else if (lowerText.match(/looking for|interested in|thinking about/)) {
+    purchaseIntent = 'interested';
+  } else if (lowerText.match(/just browsing|checking|see what/)) {
+    purchaseIntent = 'browsing';
+  }
+
+  // 1. Advanced Product Category Detection
+  if (action === 'search') {
+    // Electronics & Tech
+    if (lowerText.match(/watch|apple watch|galaxy watch|smartwatch|fitness tracker/)) {
+      product = 'Smartwatch';
+      features.push('fitness_tracking');
+    } else if (lowerText.match(/phone|iphone|android|smartphone|mobile|pixel|galaxy/)) {
+      product = 'Smartphone';
+      if (lowerText.includes('gaming')) features.push('gaming_phone');
+    } else if (lowerText.match(/laptop|macbook|computer|notebook|dell|hp|lenovo|asus/)) {
+      product = 'Laptop';
+      if (lowerText.includes('gaming')) features.push('gaming_laptop');
+    } else if (lowerText.match(/headphone|earbuds|airpods|sony|bose|audio|wireless/)) {
+      product = 'Headphones';
+      if (lowerText.includes('noise')) features.push('noise_cancelling');
+    } else if (lowerText.match(/tablet|ipad|kindle|surface/)) {
+      product = 'Tablet';
+    } else if (lowerText.match(/tv|television|smart tv|samsung tv|lg tv/)) {
+      product = 'Smart TV';
+    } else if (lowerText.match(/speaker|soundbar|alexa|google home/)) {
+      product = 'Smart Speaker';
+    }
+
+    // Fashion & Footwear
+    else if (lowerText.match(/shoe|sneaker|running shoe|nike|adidas|puma|footwear/)) {
+      product = 'Running Shoes';
+      if (lowerText.includes('running') || lowerText.includes('jog')) features.push('running');
+      if (lowerText.includes('casual')) features.push('casual');
+    } else if (lowerText.match(/croc|clog|crocs/)) {
+      product = 'Crocs';
+    } else if (lowerText.match(/boot|boots|timberland|dr martens/)) {
+      product = 'Boots';
+    } else if (lowerText.match(/sandal|flip flop|havaianas/)) {
+      product = 'Sandals';
+    }
+
+    // Clothing & Accessories
+    else if (lowerText.match(/jacket|hoodie|coat|blazer/)) {
+      product = 'Jacket';
+      if (lowerText.includes('winter')) features.push('winter');
+      if (lowerText.includes('leather')) features.push('leather');
+    } else if (lowerText.match(/shirt|tshirt|top|polo/)) {
+      product = 'Shirt';
+      if (lowerText.includes('cotton')) features.push('cotton');
+      if (lowerText.includes('formal')) features.push('formal');
+    } else if (lowerText.match(/jeans|pants|trousers/)) {
+      product = 'Jeans';
+      if (lowerText.includes('denim')) features.push('denim');
+    } else if (lowerText.match(/bag|backpack|luggage|travel/)) {
+      product = 'Bag';
+      if (lowerText.includes('laptop')) features.push('laptop_bag');
+    } else if (lowerText.match(/watch|wristwatch|rolex|casio|timex/)) {
+      product = 'Watch';
+      if (!lowerText.includes('smart')) features.push('analog');
+    }
+
+    // Home & Kitchen
+    else if (lowerText.match(/coffee maker|nespresso|breville/)) {
+      product = 'Coffee Maker';
+    } else if (lowerText.match(/blender|mixer|nutribullet/)) {
+      product = 'Blender';
+    } else if (lowerText.match(/air fryer|instant pot|cooker/)) {
+      product = 'Air Fryer';
+    }
+
+    // Sports & Fitness
+    else if (lowerText.match(/dumbbell|weight|gym equipment/)) {
+      product = 'Dumbbells';
+    } else if (lowerText.match(/yoga mat|fitness mat/)) {
+      product = 'Yoga Mat';
+    } else if (lowerText.match(/bicycle|bike|cycle/)) {
+      product = 'Bicycle';
+    }
+
+    // Books & Education
+    else if (lowerText.match(/book|novel|textbook|kindle/)) {
+      product = 'Book';
+    }
+
+    // If no specific category found, extract general product
+    if (!product) {
+      const productMatch = lowerText.match(/(?:looking for|find me|show me|i want|i need)\s+(.+?)(?:\s+under|\s+for|\s+with|\s+in|$)/i);
+      if (productMatch) {
+        product = productMatch[1].trim();
+      }
+    }
+  }
+
+  // 2. Enhanced Brand Detection (50+ brands)
+  const brands = [
+    // Tech
+    'apple', 'samsung', 'google', 'oneplus', 'xiaomi', 'realme', 'oppo', 'vivo',
+    'dell', 'hp', 'lenovo', 'asus', 'acer', 'msi', 'razer', 'alienware',
+    'sony', 'bose', 'jbl', 'sennheiser', 'marshall', 'beats',
+    'nintendo', 'playstation', 'xbox',
+
+    // Fashion
+    'nike', 'adidas', 'puma', 'reebok', 'under armour', 'new balance',
+    'crocs', 'havaianas', 'skechers', 'clarks', 'timberland', 'dr martens',
+    'levis', 'wrangler', 'pepe jeans', 'zara', 'h&m', 'uniqlo', 'forever 21',
+    'rolex', 'casio', 'fossil', 'tissot',
+
+    // Home
+    'nespresso', 'breville', 'philips', 'instant pot', 'nutribullet',
+    'samsung', 'lg', 'sony', 'panasonic'
+  ];
+
+  let detectedBrand = null;
+  for (const brand of brands) {
+    if (lowerText.includes(brand)) {
+      detectedBrand = brand.charAt(0).toUpperCase() + brand.slice(1);
+      features.push(`brand_${brand}`);
       break;
     }
   }
 
-  // 3. Feature detection (colors, qualities)
-  const colors = ['red', 'blue', 'black', 'white', 'green', 'pink', 'silver', 'gold'];
-  const specs = ['waterproof', 'wireless', 'gaming', 'noise cancelling', 'leather', 'denim', 'cotton'];
-  colors.forEach(c => { if (lowerText.includes(c)) features.push(c); });
-  specs.forEach(s => { if (lowerText.includes(s)) features.push(s); });
+  // 3. Advanced Feature Detection
+  const colors = ['red', 'blue', 'black', 'white', 'green', 'pink', 'silver', 'gold', 'gray', 'purple', 'orange', 'yellow', 'brown', 'navy', 'maroon'];
+  const sizes = ['small', 'medium', 'large', 'xl', 'xxl', 'xs', 's', 'm', 'l', '32', '34', '36', '38', '40', '42'];
+  const specs = [
+    'waterproof', 'wireless', 'gaming', 'noise cancelling', 'leather', 'denim', 'cotton',
+    'bluetooth', 'usb-c', 'fast charging', '4k', 'hd', 'oled', 'touchscreen',
+    'mechanical', 'rgb', 'backlit', 'ergonomic', 'portable', 'compact'
+  ];
 
-  // 4. Budget Extraction (improved)
-  const budgetMatch = lowerText.match(/under\s?\$?([\d,]+)/) ||
-    lowerText.match(/([\d,]+)\s?(?:rupees|rs|usd|dollars|\$)/) ||
-    lowerText.match(/budget(?:\s?of)?\s?\$?([\d,]+)/) ||
-    lowerText.match(/\$?([\d,]+)/);
+  // Detect colors
+  colors.forEach(color => {
+    if (lowerText.includes(color)) features.push(`color_${color}`);
+  });
 
-  if (budgetMatch) {
-    budget = parseInt(budgetMatch[1].replace(/,/g, ''));
+  // Detect sizes
+  sizes.forEach(size => {
+    if (lowerText.includes(size)) features.push(`size_${size}`);
+  });
+
+  // Detect specifications
+  specs.forEach(spec => {
+    if (lowerText.includes(spec.replace(' ', '')) || lowerText.includes(spec)) {
+      features.push(spec.replace(' ', '_'));
+    }
+  });
+
+  // Special feature combinations
+  if (lowerText.match(/noise.cancelling|noise cancelling/)) features.push('noise_cancelling');
+  if (lowerText.match(/water.resistant|water resistant/)) features.push('water_resistant');
+  if (lowerText.match(/fast.charging|fast charging/)) features.push('fast_charging');
+
+  // 4. Advanced Budget Extraction
+  const budgetPatterns = [
+    /under\s+(?:rs\.?|rupees?|₹|usd|\$)?\s*([\d,]+(?:\.\d+)?)/i,
+    /(?:rs\.?|rupees?|₹|usd|\$)\s*([\d,]+(?:\.\d+)?)\s+(?:or less|maximum|at most|below)/i,
+    /budget\s+(?:of|is)?\s+(?:rs\.?|rupees?|₹|usd|\$)?\s*([\d,]+(?:\.\d+)?)/i,
+    /(?:rs\.?|rupees?|₹|usd|\$)?\s*([\d,]+(?:\.\d+)?)\s+(?:rupees?|bucks|dollars?)/i,
+    /no more than\s+(?:rs\.?|rupees?|₹|usd|\$)?\s*([\d,]+(?:\.\d+)?)/i
+  ];
+
+  for (const pattern of budgetPatterns) {
+    const match = lowerText.match(pattern);
+    if (match) {
+      budget = parseFloat(match[1].replace(/,/g, ''));
+      break;
+    }
   }
 
-  // 5. Urgency
-  if (lowerText.match(/now|urgent|today|asap|fast/)) urgency = 'high';
+  // Convert USD to INR if needed (rough estimate)
+  if (lowerText.includes('usd') || lowerText.includes('dollar') || lowerText.includes('$')) {
+    if (budget && budget < 1000) { // Likely USD if under 1000
+      budget = budget * 83; // Current USD to INR rate
+    }
+  }
 
-  const result = { action, product, budget, features, urgency };
-  console.log('[v7.0] Smart Local Result:', result);
+  // 5. Enhanced Urgency Detection
+  if (lowerText.match(/right now|immediately|urgent|emergency|asap|today|deadline/)) {
+    urgency = 'high';
+  } else if (lowerText.match(/soon|this week|quickly|fast/)) {
+    urgency = 'medium';
+  } else if (lowerText.match(/eventually|later|whenever|sometime/)) {
+    urgency = 'low';
+  }
+
+  // 6. Purchase Intent Refinement
+  if (urgency === 'high' && (lowerText.match(/need|must have|essential/))) {
+    purchaseIntent = 'urgent';
+  }
+
+  // 7. Size/Quantity Detection
+  const quantityMatch = lowerText.match(/(\d+)\s*(?:pieces?|pcs?|items?|units?)/i);
+  if (quantityMatch) {
+    features.push(`quantity_${quantityMatch[1]}`);
+  }
+
+  // 8. Quality/Price Preference
+  if (lowerText.match(/cheapest|budget|affordable|inexpensive/)) {
+    features.push('budget_friendly');
+  } else if (lowerText.match(/premium|luxury|high.end|expensive|best/)) {
+    features.push('premium_quality');
+  }
+
+  const result = {
+    action,
+    product,
+    budget,
+    features: [...new Set(features)], // Remove duplicates
+    urgency,
+    context,
+    purchaseIntent,
+    brand: detectedBrand
+  };
+
+  console.log('[v8.0] Enhanced AI Detection Result:', result);
   return result;
 }
 
