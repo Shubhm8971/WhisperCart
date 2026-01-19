@@ -68,6 +68,18 @@
         .tier-pro { background: #667eea; color: white; }
         .tier-business { background: #FF9800; color: white; }
 
+        /* Product Modal */
+        #productModal .modal-content { max-width: 600px; }
+        .product-details { text-align: center; }
+        .product-details-emoji { font-size: 3em; margin-bottom: 15px; }
+        .product-details-name { font-size: 1.5em; font-weight: bold; color: #333; margin-bottom: 10px; }
+        .product-details-price { font-size: 2em; color: #4CAF50; font-weight: bold; margin-bottom: 10px; }
+        .product-details-store { color: #666; margin-bottom: 15px; }
+        .product-details-savings { background: #4CAF50; color: white; padding: 8px 16px; border-radius: 20px; display: inline-block; margin-bottom: 20px; }
+        .purchase-section { background: #f8f9fa; padding: 20px; border-radius: 15px; margin-top: 20px; }
+        .purchase-btn { background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; padding: 15px 30px; border-radius: 25px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; }
+        .purchase-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); }
+
         @media (max-width: 768px) {
             .demo-grid { grid-template-columns: 1fr; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -114,6 +126,38 @@
                 <button class="btn" onclick="loginUser()" style="width: 100%; margin-bottom: 15px;">Login</button>
                 <p style="text-align: center; color: #666; margin-bottom: 15px;">New to WhisperCart?</p>
                 <button class="btn" onclick="showRegister()" style="width: 100%; background: #4CAF50;">Create Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Details Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="product-details">
+                <div id="productEmoji" class="product-details-emoji">🛒</div>
+                <div id="productName" class="product-details-name">Product Name</div>
+                <div id="productPrice" class="product-details-price">₹0</div>
+                <div id="productStore" class="product-details-store">Store Name</div>
+                <div id="productSavings" class="product-details-savings">Save ₹0</div>
+            </div>
+
+            <div class="purchase-section">
+                <h3 style="color: #667eea; margin-bottom: 15px;">Ready to Purchase?</h3>
+                <p style="color: #666; margin-bottom: 20px;">
+                    You'll be redirected to the official store website to complete your purchase.
+                    WhisperCart earns a commission on successful sales.
+                </p>
+
+                <div id="tierBenefits" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <!-- Dynamic tier benefits will be inserted here -->
+                </div>
+
+                <button id="purchaseBtn" class="purchase-btn" onclick="proceedToPurchase()">🛒 Buy Now</button>
+
+                <p style="text-align: center; color: #999; font-size: 12px; margin-top: 10px;">
+                    Secure checkout • Free shipping available • 30-day returns
+                </p>
             </div>
         </div>
     </div>
@@ -620,8 +664,17 @@
                     productBadge = '<div style="background: #FF9800; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-bottom: 5px; display: inline-block;">BULK DISCOUNT</div>';
                 }
 
+                const productInfo = {
+                    name: product.name,
+                    price: negotiatedPrice,
+                    store: product.store,
+                    savings: savings,
+                    category: category,
+                    userTier: userTier
+                };
+
                 html += `
-                    <div class="product-card" onclick="openAffiliateLink('${affiliateUrl}')" style="cursor: pointer;">
+                    <div class="product-card" onclick="showProductModal('${JSON.stringify(productInfo).replace(/'/g, "\\'")}')" style="cursor: pointer;">
                         ${productBadge}
                         <div class="product-emoji">${product.emoji}</div>
                         <div class="product-name">${product.name}</div>
@@ -957,6 +1010,82 @@
                     saveUserData();
                 }
             }
+        }
+
+        // Product Modal Functions
+        let currentProductUrl = '';
+
+        function showProductModal(productDataJson) {
+            try {
+                const productData = JSON.parse(productDataJson);
+
+                // Update modal content
+                document.getElementById('productEmoji').textContent = getEmojiForCategory(productData.category);
+                document.getElementById('productName').textContent = productData.name;
+                document.getElementById('productPrice').textContent = `₹${productData.price.toLocaleString()}`;
+                document.getElementById('productStore').textContent = productData.store;
+                document.getElementById('productSavings').textContent = `Save ₹${productData.savings.toLocaleString()}`;
+
+                // Generate purchase URL
+                currentProductUrl = generateAffiliateUrl(productData.url || '#');
+
+                // Show tier benefits
+                let tierBenefits = '';
+                if (productData.userTier === 'free') {
+                    tierBenefits = `
+                        <strong>🎁 Free Plan Benefits:</strong><br>
+                        • AI-negotiated prices (15% savings)<br>
+                        • Basic product search<br>
+                        • Limited to 5 searches/day<br><br>
+                        <strong>💡 Upgrade to Pro for 25% better deals!</strong>
+                    `;
+                } else if (productData.userTier === 'pro') {
+                    tierBenefits = `
+                        <strong>🚀 Pro Exclusive Benefits:</strong><br>
+                        • 25% better prices than Free users<br>
+                        • Unlimited searches<br>
+                        • Premium AI features<br>
+                        • Priority support
+                    `;
+                } else if (productData.userTier === 'business') {
+                    tierBenefits = `
+                        <strong>🏢 Business Elite Benefits:</strong><br>
+                        • Maximum 30% savings<br>
+                        • Bulk discount pricing<br>
+                        • Enterprise features<br>
+                        • Dedicated support
+                    `;
+                }
+
+                document.getElementById('tierBenefits').innerHTML = tierBenefits;
+
+                // Show modal
+                document.getElementById('productModal').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error parsing product data:', error);
+                alert('Sorry, there was an error loading the product details.');
+            }
+        }
+
+        function proceedToPurchase() {
+            if (currentProductUrl) {
+                openAffiliateLink(currentProductUrl);
+                closeModal();
+            } else {
+                alert('Product link not available. Please try another product.');
+            }
+        }
+
+        function getEmojiForCategory(category) {
+            const emojiMap = {
+                'running shoes': '👟',
+                'smartphones': '📱',
+                'laptops': '💻',
+                'headphones': '🎧',
+                'watches': '⌚'
+            };
+            return emojiMap[category] || '🛒';
         }
 
         // Initialize with welcome message
