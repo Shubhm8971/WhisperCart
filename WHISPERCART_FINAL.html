@@ -510,7 +510,13 @@
                     <strong>🤖 Searching for best deals...</strong>`, 'success');
 
                 setTimeout(() => {
-                    searchProductsByCategory(category, budget, 'voiceResult');
+                    console.log('Voice processing: Calling searchProductsByCategory', category, budget);
+                    try {
+                        searchProductsByCategory(category, budget, 'voiceResult');
+                    } catch (error) {
+                        console.error('Voice processing error:', error);
+                        showResult('voiceResult', '❌ Sorry, there was an error processing your request. Please try again.', 'error');
+                    }
                 }, 1500);
             }, 1000);
         }
@@ -536,8 +542,15 @@
         }
 
         function searchProductsByCategory(category, budget, resultDiv) {
+            console.log('Searching products:', { category, budget, resultDiv });
+            console.log('Available products:', products);
+            console.log('Category products:', products[category]);
+
             const categoryProducts = products[category] || [];
+            console.log('Category products found:', categoryProducts.length);
+
             let affordable = categoryProducts.filter(p => p.price <= budget);
+            console.log('Affordable products:', affordable.length);
 
             if (affordable.length === 0) {
                 showResult(resultDiv, `😔 No ${category} found within ₹${budget} budget. Try increasing your budget!`, 'error');
