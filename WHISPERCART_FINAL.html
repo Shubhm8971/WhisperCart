@@ -69,16 +69,17 @@
         .tier-business { background: #FF9800; color: white; }
 
         /* Product Modal */
-        #productModal .modal-content { max-width: 600px; }
-        .product-details { text-align: center; }
-        .product-details-emoji { font-size: 3em; margin-bottom: 15px; }
-        .product-details-name { font-size: 1.5em; font-weight: bold; color: #333; margin-bottom: 10px; }
-        .product-details-price { font-size: 2em; color: #4CAF50; font-weight: bold; margin-bottom: 10px; }
-        .product-details-store { color: #666; margin-bottom: 15px; }
-        .product-details-savings { background: #4CAF50; color: white; padding: 8px 16px; border-radius: 20px; display: inline-block; margin-bottom: 20px; }
-        .purchase-section { background: #f8f9fa; padding: 20px; border-radius: 15px; margin-top: 20px; }
-        .purchase-btn { background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; padding: 15px 30px; border-radius: 25px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; }
-        .purchase-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); }
+        #productModal .modal-content { max-width: 1000px; min-height: 800px; max-height: 95vh; overflow-y: auto; }
+        .product-details { text-align: center; padding: 40px; }
+        .product-details-emoji { font-size: 5em; margin-bottom: 25px; }
+        .product-details-name { font-size: 2em; font-weight: bold; color: #333; margin-bottom: 20px; line-height: 1.4; }
+        .product-details-price { font-size: 3em; color: #4CAF50; font-weight: bold; margin-bottom: 20px; }
+        .product-details-store { color: #666; margin-bottom: 25px; font-size: 20px; }
+        .product-details-savings { background: #4CAF50; color: white; padding: 15px 25px; border-radius: 30px; display: inline-block; margin-bottom: 30px; font-size: 18px; font-weight: bold; }
+        .purchase-section { background: #f8f9fa; padding: 40px; border-radius: 25px; margin-top: 30px; }
+        .tier-benefits { background: #fff3cd; color: #856404; padding: 30px; border-radius: 20px; margin-bottom: 35px; font-size: 18px; line-height: 1.8; border: 3px solid #ffeaa7; }
+        .purchase-btn { background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; padding: 25px 50px; border-radius: 35px; font-size: 22px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 30px; }
+        .purchase-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5); }
 
         @media (max-width: 768px) {
             .demo-grid { grid-template-columns: 1fr; }
