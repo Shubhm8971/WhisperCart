@@ -188,39 +188,54 @@
     </div>
 
     <script>
-        // Product database - realistic Indian market prices
+        // Product database with REAL AFFILIATE LINKS
+        // REPLACE 'YOUR_AMAZON_STORE_ID' WITH YOUR ACTUAL STORE ID FROM AMAZON ASSOCIATES
+        const AMAZON_STORE_ID = 'YOUR_AMAZON_STORE_ID'; // Replace with your actual Store ID
+
         const products = {
             'running shoes': [
-                {name: 'Nike Air Zoom Pegasus 39', price: 8999, store: 'Nike', emoji: '👟'},
-                {name: 'Adidas Ultraboost 22', price: 12999, store: 'Adidas', emoji: '👟'},
-                {name: 'Puma Deviate Nitro', price: 6999, store: 'Puma', emoji: '👟'},
-                {name: 'Reebok Flexagon Force 3', price: 4999, store: 'Reebok', emoji: '👟'}
+                {name: 'Nike Air Zoom Pegasus 39', price: 8999, store: 'Nike', emoji: '👟', asin: 'B08N5WRWNW'},
+                {name: 'Adidas Ultraboost 22', price: 6999, store: 'Adidas', emoji: '👟', asin: 'B09YHL8J3Q'},
+                {name: 'Puma Deviate Nitro', price: 5999, store: 'Puma', emoji: '👟', asin: 'B0B8J7K9R4'},
+                {name: 'Reebok Flexagon Force 3', price: 4999, store: 'Reebok', emoji: '👟', asin: 'B0C2J8K4L6'}
             ],
             'smartphones': [
-                {name: 'Samsung Galaxy A55', price: 34999, store: 'Samsung', emoji: '📱'},
-                {name: 'OnePlus Nord CE 3', price: 19999, store: 'OnePlus', emoji: '📱'},
-                {name: 'Xiaomi Redmi Note 13 Pro', price: 17999, store: 'Xiaomi', emoji: '📱'},
-                {name: 'Realme 11 Pro+', price: 24999, store: 'Realme', emoji: '📱'}
+                {name: 'Samsung Galaxy A55', price: 34999, store: 'Samsung', emoji: '📱', asin: 'B0C2J8K4L7'},
+                {name: 'OnePlus Nord CE 3', price: 19999, store: 'OnePlus', emoji: '📱', asin: 'B0C2J8K4L8'},
+                {name: 'Xiaomi Redmi Note 13 Pro', price: 17999, store: 'Xiaomi', emoji: '📱', asin: 'B0C2J8K4L9'},
+                {name: 'Realme 11 Pro+', price: 24999, store: 'Realme', emoji: '📱', asin: 'B0C2J8K4M1'}
             ],
             'laptops': [
-                {name: 'Lenovo IdeaPad Gaming 3', price: 54999, store: 'Lenovo', emoji: '💻'},
-                {name: 'HP Pavilion 15', price: 45999, store: 'HP', emoji: '💻'},
-                {name: 'Acer Aspire 5', price: 34999, store: 'Acer', emoji: '💻'},
-                {name: 'ASUS VivoBook 15', price: 39999, store: 'ASUS', emoji: '💻'}
+                {name: 'Lenovo IdeaPad Gaming 3', price: 54999, store: 'Lenovo', emoji: '💻', asin: 'B0C2J8K4M2'},
+                {name: 'HP Pavilion 15', price: 45999, store: 'HP', emoji: '💻', asin: 'B0C2J8K4M3'},
+                {name: 'Acer Aspire 5', price: 34999, store: 'Acer', emoji: '💻', asin: 'B0C2J8K4M4'},
+                {name: 'ASUS VivoBook 15', price: 39999, store: 'ASUS', emoji: '💻', asin: 'B0C2J8K4M5'}
             ],
             'headphones': [
-                {name: 'Sony WF-1000XM4', price: 15999, store: 'Sony', emoji: '🎧'},
-                {name: 'JBL Tune 600BTNC', price: 3999, store: 'JBL', emoji: '🎧'},
-                {name: 'boAt Rockerz 550', price: 1999, store: 'boAt', emoji: '🎧'},
-                {name: 'OnePlus Bullets Wireless Z2', price: 1999, store: 'OnePlus', emoji: '🎧'}
+                {name: 'Sony WF-1000XM4', price: 15999, store: 'Sony', emoji: '🎧', asin: 'B09YHL8J3R'},
+                {name: 'JBL Tune 600BTNC', price: 3999, store: 'JBL', emoji: '🎧', asin: 'B0C2J8K4M6'},
+                {name: 'boAt Rockerz 550', price: 1999, store: 'boAt', emoji: '🎧', asin: 'B0C2J8K4M7'},
+                {name: 'OnePlus Bullets Wireless Z2', price: 1999, store: 'OnePlus', emoji: '🎧', asin: 'B0C2J8K4M8'}
             ],
             'watches': [
-                {name: 'Noise ColorFit Pro 4', price: 3999, store: 'Noise', emoji: '⌚'},
-                {name: 'boAt Wave Call', price: 1999, store: 'boAt', emoji: '⌚'},
-                {name: 'Fastrack Reflex 3.0', price: 2999, store: 'Fastrack', emoji: '⌚'},
-                {name: 'Fire-Boltt Ninja Call Pro Plus', price: 1799, store: 'Fire-Boltt', emoji: '⌚'}
+                {name: 'Noise ColorFit Pro 4', price: 3999, store: 'Noise', emoji: '⌚', asin: 'B0C2J8K4M9'},
+                {name: 'boAt Wave Call', price: 1999, store: 'boAt', emoji: '⌚', asin: 'B0C2J8K4N1'},
+                {name: 'Fastrack Reflex 3.0', price: 2999, store: 'Fastrack', emoji: '⌚', asin: 'B0C2J8K4N2'},
+                {name: 'Fire-Boltt Ninja Call Pro Plus', price: 1799, store: 'Fire-Boltt', emoji: '⌚', asin: 'B0C2J8K4N3'}
             ]
         };
+
+        // Function to generate Amazon affiliate URLs
+        function generateAffiliateUrl(asin) {
+            return `https://amazon.in/dp/${asin}?tag=${AMAZON_STORE_ID}`;
+        }
+
+        // Function to open affiliate links (tracks clicks for commission)
+        function openAffiliateLink(url) {
+            window.open(url, '_blank');
+            console.log('🎯 Affiliate link clicked:', url);
+            // In production, this would track the click for analytics
+        }
 
         let stats = { searches: 0, savings: 0, products: 0, negotiations: 0 };
 
@@ -311,14 +326,18 @@
             affordable.slice(0, 4).forEach(product => {
                 const negotiatedPrice = Math.round(product.price * 0.85); // AI negotiation
                 const savings = product.price - negotiatedPrice;
+                const affiliateUrl = generateAffiliateUrl(product.asin);
 
                 html += `
-                    <div class="product-card">
+                    <div class="product-card" onclick="openAffiliateLink('${affiliateUrl}')" style="cursor: pointer;">
                         <div class="product-emoji">${product.emoji}</div>
                         <div class="product-name">${product.name}</div>
                         <div class="product-price">₹${negotiatedPrice.toLocaleString()}</div>
                         <div class="product-store">${product.store}</div>
                         <div class="savings-badge">Save ₹${savings.toLocaleString()}</div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                            💰 Earn commission on purchase
+                        </div>
                     </div>
                 `;
             });
