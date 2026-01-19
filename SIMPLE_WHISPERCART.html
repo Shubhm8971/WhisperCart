@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhisperCart - Working Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: linear-gradient(45deg, #667eea, #764ba2); min-height: 100vh; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { font-size: 2.5em; color: #667eea; margin-bottom: 10px; }
+        .tagline { color: #666; font-size: 1.1em; }
+        .demo-section { margin-bottom: 30px; padding: 20px; border: 2px solid #e1e5e9; border-radius: 15px; }
+        .demo-title { color: #333; margin-bottom: 15px; font-size: 1.2em; }
+        .btn { background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-size: 16px; margin: 5px; transition: 0.3s; }
+        .btn:hover { background: #5a6fd8; transform: translateY(-2px); }
+        .result { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 15px; border-left: 4px solid #667eea; }
+        .success { background: #e8f5e8; border-left-color: #4CAF50; }
+        .product-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px; }
+        .product-card { background: white; padding: 15px; border-radius: 10px; border: 1px solid #ddd; }
+        .product-name { font-weight: bold; color: #333; margin-bottom: 5px; }
+        .product-price { color: #4CAF50; font-weight: bold; margin-bottom: 5px; }
+        .product-store { color: #666; font-size: 14px; margin-bottom: 5px; }
+        .savings { background: #4CAF50; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px; display: inline-block; margin-top: 5px; }
+        .stats { background: #f5f5f5; padding: 15px; border-radius: 10px; margin-top: 20px; }
+        .stat-item { display: inline-block; margin: 10px; text-align: center; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #667eea; display: block; }
+        .stat-label { color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🛒 WhisperCart</div>
+            <div class="tagline">AI-Powered Shopping Assistant - Working Demo</div>
+        </div>
+
+        <div class="demo-section">
+            <div class="demo-title">🎤 Voice Shopping Demo</div>
+            <p>Type what you would say to the AI assistant:</p>
+            <input type="text" id="voiceInput" placeholder="Try: 'I want running shoes under 3000 rupees'" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 25px; font-size: 16px; margin: 10px 0;">
+            <br>
+            <button class="btn" onclick="processVoice()">🎤 Process Voice Request</button>
+            <button class="btn" onclick="showRandomDemo()">🎲 Show Random Demo</button>
+            <div id="voiceResult"></div>
+        </div>
+
+        <div class="demo-section">
+            <div class="demo-title">🛒 Product Search Demo</div>
+            <p>Choose a category and budget:</p>
+            <select id="category" style="padding: 10px; border-radius: 10px; border: 2px solid #ddd; margin: 10px 5px;">
+                <option value="running shoes">Running Shoes</option>
+                <option value="smartphones">Smartphones</option>
+                <option value="laptops">Laptops</option>
+                <option value="headphones">Headphones</option>
+                <option value="watches">Smart Watches</option>
+            </select>
+            <input type="number" id="budget" placeholder="3000" value="3000" style="padding: 10px; border-radius: 10px; border: 2px solid #ddd; width: 120px; margin: 10px 5px;">
+            <button class="btn" onclick="searchProducts()">🔍 Find Deals</button>
+            <div id="searchResult"></div>
+        </div>
+
+        <div class="demo-section">
+            <div class="demo-title">🤝 AI Price Negotiation Demo</div>
+            <p>Click negotiate on any product above to see AI bargaining in action!</p>
+            <div id="negotiationResult"></div>
+        </div>
+
+        <div class="stats">
+            <div class="demo-title">📊 Your Shopping Stats</div>
+            <div class="stat-item">
+                <span class="stat-value" id="searches">0</span>
+                <span class="stat-label">Searches</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="savings">₹0</span>
+                <span class="stat-label">Total Savings</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="products">0</span>
+                <span class="stat-label">Products Found</span>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <div class="demo-title">🎯 How WhisperCart Works</div>
+            <ul style="line-height: 1.6; color: #555;">
+                <li><strong>🎤 Voice Input:</strong> Speak naturally about what you want to buy</li>
+                <li><strong>🤖 AI Analysis:</strong> AI understands your intent and preferences</li>
+                <li><strong>🛒 Smart Search:</strong> Finds products across multiple stores</li>
+                <li><strong>💰 AI Negotiation:</strong> Automatically negotiates better prices</li>
+                <li><strong>📊 Learning:</strong> Gets smarter with your shopping preferences</li>
+            </ul>
+        </div>
+
+        <div class="demo-section" style="background: #e3f2fd; border-color: #2196f3;">
+            <div class="demo-title" style="color: #1976d2;">🚀 Future Integrations</div>
+            <p style="color: #1976d2; font-size: 14px; line-height: 1.5;">
+                <strong>Coming Soon:</strong> Direct affiliate links to Amazon, Flipkart, and other major e-commerce platforms. Once approved as affiliates, users will be able to purchase directly through optimized links while WhisperCart earns commissions to fund our AI development.
+            </p>
+            <p style="color: #1976d2; font-size: 12px; margin-top: 10px;">
+                <em>In the meantime, enjoy our AI-powered product discovery and price negotiation features!</em>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Demo data - complete working product database
+        const demoProducts = {
+            'running shoes': [
+                {name: 'Nike Air Zoom Pegasus 39', price: 8999, store: 'Nike', rating: 4.5},
+                {name: 'Adidas Ultraboost 22', price: 6999, store: 'Adidas', rating: 4.7},
+                {name: 'Puma Deviate Nitro', price: 5999, store: 'Puma', rating: 4.3},
+                {name: 'Reebok Flexagon Force 3', price: 4999, store: 'Reebok', rating: 4.2}
+            ],
+            'smartphones': [
+                {name: 'Samsung Galaxy A55', price: 34999, store: 'Samsung', rating: 4.4},
+                {name: 'OnePlus Nord CE 3', price: 19999, store: 'OnePlus', rating: 4.3},
+                {name: 'Xiaomi Redmi Note 13 Pro', price: 17999, store: 'Xiaomi', rating: 4.2},
+                {name: 'Realme 11 Pro+', price: 24999, store: 'Realme', rating: 4.1}
+            ],
+            'laptops': [
+                {name: 'Lenovo IdeaPad Gaming 3', price: 54999, store: 'Lenovo', rating: 4.2},
+                {name: 'HP Pavilion 15', price: 45999, store: 'HP', rating: 4.1},
+                {name: 'Acer Aspire 5', price: 34999, store: 'Acer', rating: 4.0},
+                {name: 'ASUS VivoBook 15', price: 39999, store: 'ASUS', rating: 4.3}
+            ],
+            'headphones': [
+                {name: 'JBL Tune 600BTNC', price: 3999, store: 'JBL', rating: 4.1},
+                {name: 'boAt Rockerz 550', price: 1999, store: 'boAt', rating: 4.0},
+                {name: 'Sony WF-1000XM4', price: 15999, store: 'Sony', rating: 4.5},
+                {name: 'OnePlus Bullets Wireless Z2', price: 1999, store: 'OnePlus', rating: 4.2}
+            ],
+            'watches': [
+                {name: 'Noise ColorFit Pro 4', price: 3999, store: 'Noise', rating: 4.0},
+                {name: 'boAt Wave Call', price: 1999, store: 'boAt', rating: 3.8},
+                {name: 'Fastrack Reflex 3.0', price: 2999, store: 'Fastrack', rating: 4.1},
+                {name: 'Fire-Boltt Ninja Call Pro Plus', price: 1799, store: 'Fire-Boltt', rating: 3.9}
+            ]
+        };
+
+        let stats = { searches: 0, savings: 0, products: 0 };
+
+        function processVoice() {
+            const input = document.getElementById('voiceInput').value.trim();
+            if (!input) {
+                showResult('voiceResult', 'Please type what you want to search for!', 'error');
+                return;
+            }
+
+            // Simple AI-like processing
+            let category = 'running shoes';
+            let budget = 3000;
+
+            const lowerInput = input.toLowerCase();
+
+            // Check for more specific terms first
+            if (lowerInput.includes('headphone') || lowerInput.includes('earphone') || lowerInput.includes('earbuds')) {
+                category = 'headphones';
+            } else if (lowerInput.includes('smartphone') || lowerInput.includes('phone') || lowerInput.includes('mobile')) {
+                category = 'smartphones';
+            } else if (lowerInput.includes('laptop') || lowerInput.includes('computer')) {
+                category = 'laptops';
+            } else if (lowerInput.includes('watch') || lowerInput.includes('smartwatch')) {
+                category = 'watches';
+            } else if (lowerInput.includes('shoe') || lowerInput.includes('sneaker') || lowerInput.includes('running')) {
+                category = 'running shoes';
+            }
+
+            // Extract budget
+            const budgetMatch = input.match(/(\d+)/);
+            if (budgetMatch) {
+                budget = parseInt(budgetMatch[1]);
+            }
+
+            showResult('voiceResult',
+                `<strong>🎯 AI Understood:</strong> Looking for ${category} under ₹${budget}<br>
+                <strong>🤖 Processing your request...</strong>`, 'success');
+
+            setTimeout(() => {
+                searchProductsByCategory(category, budget, 'voiceResult');
+            }, 1000);
+        }
+
+        function showRandomDemo() {
+            const demos = [
+                "I want running shoes under 3000 rupees",
+                "Find me a smartphone within 20000",
+                "Show me noise cancelling headphones",
+                "I need a gaming laptop under 50000",
+                "Find a smartwatch under 3000"
+            ];
+
+            const randomDemo = demos[Math.floor(Math.random() * demos.length)];
+            document.getElementById('voiceInput').value = randomDemo;
+            processVoice();
+        }
+
+        function searchProducts() {
+            const category = document.getElementById('category').value;
+            const budget = parseInt(document.getElementById('budget').value) || 3000;
+            searchProductsByCategory(category, budget, 'searchResult');
+        }
+
+        function searchProductsByCategory(category, budget, resultDiv) {
+            const products = demoProducts[category] || [];
+            const affordable = products.filter(p => p.price <= budget);
+
+            if (affordable.length === 0) {
+                showResult(resultDiv, `😔 No ${category} found within ₹${budget} budget. Try increasing your budget!`, 'error');
+                return;
+            }
+
+            // Sort by price
+            affordable.sort((a, b) => a.price - b.price);
+
+            let html = `<div class="success">🎉 Found ${affordable.length} great deals!</div>`;
+            html += '<div class="product-list">';
+
+            affordable.slice(0, 3).forEach(product => {
+                const negotiatedPrice = Math.round(product.price * 0.85);
+                const savings = product.price - negotiatedPrice;
+
+                html += `
+                    <div class="product-card">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">₹${negotiatedPrice.toLocaleString()}</div>
+                        <div class="product-store">${product.store}</div>
+                        <div class="savings">Save ₹${savings.toLocaleString()}</div>
+                        <button class="btn" onclick="negotiatePrice('${product.name}', ${product.price})" style="width: 100%; margin-top: 10px; padding: 8px;">
+                            🤝 Negotiate
+                        </button>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            document.getElementById(resultDiv).innerHTML = html;
+
+            // Update stats
+            stats.searches++;
+            stats.products += affordable.length;
+            stats.savings += affordable.slice(0, 3).reduce((sum, p) => sum + (p.price - Math.round(p.price * 0.85)), 0);
+
+            updateStats();
+        }
+
+        function negotiatePrice(productName, originalPrice) {
+            const negotiatedPrice = Math.round(originalPrice * 0.82); // Extra 3% off
+            const totalSavings = originalPrice - negotiatedPrice;
+
+            const result = document.getElementById('negotiationResult');
+            result.innerHTML = `
+                <div class="success">
+                    <h4>🤝 AI Negotiation Complete!</h4>
+                    <p><strong>Product:</strong> ${productName}</p>
+                    <p><strong>Original Price:</strong> ₹${originalPrice.toLocaleString()}</p>
+                    <p><strong>AI-Negotiated Price:</strong> ₹${negotiatedPrice.toLocaleString()}</p>
+                    <p><strong>You Save:</strong> ₹${totalSavings.toLocaleString()} (18% discount!)</p>
+                    <div class="savings" style="background: #FF9800;">🎯 Best Deal Guaranteed!</div>
+                </div>
+            `;
+
+            // Update savings
+            stats.savings += totalSavings - (originalPrice - Math.round(originalPrice * 0.85));
+            updateStats();
+        }
+
+        function showResult(divId, message, type = 'info') {
+            const div = document.getElementById(divId);
+            div.innerHTML = `<div class="result ${type === 'success' ? 'success' : ''}">${message}</div>`;
+        }
+
+        function updateStats() {
+            document.getElementById('searches').textContent = stats.searches;
+            document.getElementById('savings').textContent = '₹' + stats.savings.toLocaleString();
+            document.getElementById('products').textContent = stats.products;
+        }
+
+        // Initialize with a demo
+        setTimeout(() => {
+            showResult('voiceResult', '🎤 <strong>WhisperCart is ready!</strong> Type a shopping request above or click "Show Random Demo" to see how it works!', 'success');
+        }, 500);
+    </script>
+</body>
+</html>
