@@ -196,25 +196,25 @@
             'running shoes': [
                 {name: 'Nike Air Zoom Pegasus 39', price: 8999, store: 'Nike', emoji: '👟', asin: 'B08N5WRWNW'},
                 {name: 'Adidas Ultraboost 22', price: 6999, store: 'Adidas', emoji: '👟', asin: 'B09YHL8J3Q'},
-                {name: 'Puma Deviate Nitro', price: 5999, store: 'Puma', emoji: '👟', asin: 'B0B8J7K9R4'},
+                {name: 'Puma Deviate Nitro 2', price: 5999, store: 'Puma', emoji: '👟', asin: 'B0B8J7K9R4'},
                 {name: 'Reebok Flexagon Force 3', price: 4999, store: 'Reebok', emoji: '👟', asin: 'B0C2J8K4L6'}
             ],
             'smartphones': [
-                {name: 'Samsung Galaxy A55', price: 34999, store: 'Samsung', emoji: '📱', asin: 'B0C2J8K4L7'},
-                {name: 'OnePlus Nord CE 3', price: 19999, store: 'OnePlus', emoji: '📱', asin: 'B0C2J8K4L8'},
-                {name: 'Xiaomi Redmi Note 13 Pro', price: 17999, store: 'Xiaomi', emoji: '📱', asin: 'B0C2J8K4L9'},
-                {name: 'Realme 11 Pro+', price: 24999, store: 'Realme', emoji: '📱', asin: 'B0C2J8K4M1'}
+                {name: 'Samsung Galaxy A14 5G', price: 16499, store: 'Samsung', emoji: '📱', asin: 'B0BZ46H8PP'},
+                {name: 'OnePlus Nord CE 3 Lite', price: 19999, store: 'OnePlus', emoji: '📱', asin: 'B0BY8MCQ9S'},
+                {name: 'Redmi Note 13 Pro 5G', price: 24999, store: 'Xiaomi', emoji: '📱', asin: 'B0C2J8K4L9'},
+                {name: 'Realme 11 Pro 5G', price: 21999, store: 'Realme', emoji: '📱', asin: 'B0C2J8K4M1'}
             ],
             'laptops': [
-                {name: 'Lenovo IdeaPad Gaming 3', price: 54999, store: 'Lenovo', emoji: '💻', asin: 'B0C2J8K4M2'},
-                {name: 'HP Pavilion 15', price: 45999, store: 'HP', emoji: '💻', asin: 'B0C2J8K4M3'},
-                {name: 'Acer Aspire 5', price: 34999, store: 'Acer', emoji: '💻', asin: 'B0C2J8K4M4'},
-                {name: 'ASUS VivoBook 15', price: 39999, store: 'ASUS', emoji: '💻', asin: 'B0C2J8K4M5'}
+                {name: 'Lenovo IdeaPad Slim 3', price: 34999, store: 'Lenovo', emoji: '💻', asin: 'B0C2J8K4M2'},
+                {name: 'HP 15s', price: 27999, store: 'HP', emoji: '💻', asin: 'B0C2J8K4M3'},
+                {name: 'Acer Aspire 3', price: 24999, store: 'Acer', emoji: '💻', asin: 'B0C2J8K4M4'},
+                {name: 'ASUS VivoBook 15', price: 29999, store: 'ASUS', emoji: '💻', asin: 'B0C2J8K4M5'}
             ],
             'headphones': [
                 {name: 'Sony WF-1000XM4', price: 15999, store: 'Sony', emoji: '🎧', asin: 'B09YHL8J3R'},
-                {name: 'JBL Tune 600BTNC', price: 3999, store: 'JBL', emoji: '🎧', asin: 'B0C2J8K4M6'},
-                {name: 'boAt Rockerz 550', price: 1999, store: 'boAt', emoji: '🎧', asin: 'B0C2J8K4M7'},
+                {name: 'JBL Tune 230NC', price: 3999, store: 'JBL', emoji: '🎧', asin: 'B0C2J8K4M6'},
+                {name: 'boAt Rockerz 255 Pro+', price: 1999, store: 'boAt', emoji: '🎧', asin: 'B0C2J8K4M7'},
                 {name: 'OnePlus Bullets Wireless Z2', price: 1999, store: 'OnePlus', emoji: '🎧', asin: 'B0C2J8K4M8'}
             ],
             'watches': [
@@ -227,11 +227,16 @@
 
         // Function to generate Amazon affiliate URLs
         function generateAffiliateUrl(asin) {
+            if (AMAZON_STORE_ID === 'YOUR_AMAZON_STORE_ID') {
+                // Demo mode - show placeholder URL
+                return `https://amazon.in/dp/${asin}?tag=YOUR_STORE_ID`;
+            }
             return `https://amazon.in/dp/${asin}?tag=${AMAZON_STORE_ID}`;
         }
 
         // Function to open affiliate links (tracks clicks for commission)
         function openAffiliateLink(url) {
+            alert(`🎯 Affiliate Link: ${url}\n\nThis link will earn you commission when someone purchases through it!\n\nReplace 'YOUR_AMAZON_STORE_ID' with your real Store ID to start earning.`);
             window.open(url, '_blank');
             console.log('🎯 Affiliate link clicked:', url);
             // In production, this would track the click for analytics
