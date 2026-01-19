@@ -455,12 +455,12 @@
         // Function to generate affiliate/store URLs
         function generateAffiliateUrl(url) {
             // For Shopify stores, use direct URLs
-            // For demo products, create placeholder affiliate links
+            // For demo products, create working placeholder links
             if (url && url !== '#') {
                 return url; // Direct Shopify store URL
             } else {
-                // Demo product - create placeholder affiliate link
-                return `https://example.com/affiliate/product?ref=whispercart`;
+                // Demo product - redirect to a working page
+                return `https://www.google.com/search?q=${encodeURIComponent('buy ' + 'demo product')}`;
             }
         }
 
@@ -611,7 +611,7 @@
             affordable.slice(0, 4).forEach(product => {
                 const negotiatedPrice = Math.round(product.price * discountRate);
                 const savings = product.price - negotiatedPrice;
-                const affiliateUrl = generateAffiliateUrl(product.asin);
+                const affiliateUrl = generateAffiliateUrl(product.url);
 
                 let productBadge = '';
                 if (exclusiveDeals && userTier === 'pro') {
