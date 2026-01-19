@@ -154,10 +154,16 @@
                     <!-- Dynamic tier benefits will be inserted here -->
                 </div>
 
-                <button id="purchaseBtn" class="purchase-btn" onclick="proceedToPurchase()">🛒 Buy Now</button>
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <strong style="color: #2e7d32;">🎯 Demo Mode Active</strong><br>
+                    <small style="color: #388e3c;">This demonstrates WhisperCart's AI shopping capabilities.<br>
+                    Real affiliate links will be integrated in production.</small>
+                </div>
+
+                <button id="purchaseBtn" class="purchase-btn" onclick="demoPurchase()">🎯 Experience AI Shopping</button>
 
                 <p style="text-align: center; color: #999; font-size: 12px; margin-top: 10px;">
-                    Secure checkout • Free shipping available • 30-day returns
+                    AI-powered price comparison • Smart recommendations • Real-time deals
                 </p>
             </div>
         </div>
@@ -1067,6 +1073,11 @@
             } else {
                 alert('Product link not available. Please try another product.');
             }
+        }
+
+        function demoPurchase() {
+            alert(`🎯 AI Shopping Experience Demo\n\n✅ Product added to cart\n✅ AI-negotiated ₹500 discount applied\n✅ Free shipping unlocked\n✅ Order confirmed!\n\n💰 You would earn commission on this sale in production!\n\nThis demonstrates WhisperCart's complete shopping flow.`);
+            closeModal();
         }
 
         function getEmojiForCategory(category) {
