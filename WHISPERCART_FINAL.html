@@ -452,20 +452,27 @@
             }
         }
 
-        // Function to generate Amazon affiliate URLs
-        function generateAffiliateUrl(asin) {
-            // Amazon Associates link format
-            const baseUrl = `https://www.amazon.in/dp/${asin}`;
-            const affiliateParams = `?tag=${AMAZON_STORE_ID}&linkCode=ll1&language=en_IN&ref_=as_li_ss_tl`;
-
-            return baseUrl + affiliateParams;
+        // Function to generate affiliate/store URLs
+        function generateAffiliateUrl(url) {
+            // For Shopify stores, use direct URLs
+            // For demo products, create placeholder affiliate links
+            if (url && url !== '#') {
+                return url; // Direct Shopify store URL
+            } else {
+                // Demo product - create placeholder affiliate link
+                return `https://example.com/affiliate/product?ref=whispercart`;
+            }
         }
 
-        // Function to open affiliate links (tracks clicks for commission)
+        // Function to open affiliate/store links
         function openAffiliateLink(url) {
-            alert(`🎯 Amazon Affiliate Link:\n${url}\n\n✅ This link includes your Store ID: ${AMAZON_STORE_ID}\n💰 You earn commission on purchases!\n\n📱 Link will open in new tab for testing.`);
+            if (url.includes('example.com')) {
+                alert(`🎯 Demo Product Link:\n${url}\n\n📝 This is a demo link for testing.\n💰 Real affiliate commissions coming soon!\n\n📱 Link will open in new tab.`);
+            } else {
+                alert(`🎯 Store Link:\n${url}\n\n✅ Direct link to product on store website\n💰 You earn commission on purchases!\n\n📱 Link will open in new tab.`);
+            }
             window.open(url, '_blank');
-            console.log('🎯 Affiliate link clicked:', url);
+            console.log('🎯 Store link clicked:', url);
         }
 
         let stats = { searches: 0, savings: 0, products: 0, negotiations: 0 };
