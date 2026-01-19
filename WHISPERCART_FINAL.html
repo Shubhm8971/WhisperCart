@@ -129,9 +129,12 @@
             </div>
 
             <!-- User Status Bar -->
-            <div id="userBar" style="display: none; background: rgba(255,255,255,0.9); color: #333; padding: 15px; border-radius: 10px; margin-top: 20px; text-align: center;">
-                <div id="userInfo"></div>
-                <button class="btn" onclick="logoutUser()" style="margin-top: 10px; padding: 8px 16px; font-size: 14px;">Logout</button>
+            <div id="userBar" style="display: none; background: rgba(255,255,255,0.95); color: #333; padding: 20px; border-radius: 15px; margin-top: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                <div id="userInfo" style="text-align: center; margin-bottom: 15px;"></div>
+                <div id="userDashboard" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;"></div>
+                <div style="text-align: center;">
+                    <button class="btn" onclick="logoutUser()" style="padding: 8px 16px; font-size: 14px; background: #f44336;">Logout</button>
+                </div>
             </div>
         </header>
 
@@ -511,21 +514,88 @@
         function updateUIForUser() {
             const userBar = document.getElementById('userBar');
             const userInfo = document.getElementById('userInfo');
+            const userDashboard = document.getElementById('userDashboard');
 
             if (currentUser) {
                 userBar.style.display = 'block';
                 const tierClass = `tier-${currentUser.plan}`;
+
+                // Personalized greeting
+                const now = new Date();
+                const hour = now.getHours();
+                let greeting = 'Hello';
+                if (hour < 12) greeting = 'Good morning';
+                else if (hour < 17) greeting = 'Good afternoon';
+                else greeting = 'Good evening';
+
                 userInfo.innerHTML = `
-                    <strong>Welcome back, ${currentUser.name}!</strong><br>
+                    <strong>${greeting}, ${currentUser.name}!</strong><br>
                     <span class="user-tier ${tierClass}">${currentUser.plan.toUpperCase()} PLAN</span><br>
-                    <small>${currentUser.email}</small>
+                    <small>Member since ${new Date(currentUser.joinedDate).toLocaleDateString()}</small>
                 `;
+
+                // User dashboard with personalized stats
+                let dashboardHTML = '';
+
+                if (currentUser.plan === 'free') {
+                    dashboardHTML = `
+                        <div style="text-align: center; padding: 10px; background: #e8f5e8; border-radius: 8px;">
+                            <strong>📊 Your Usage</strong><br>
+                            <small>Searches used: ${currentUser.searchesUsed || 0}/5 today</small><br>
+                            <small>Upgrade to Pro for unlimited searches!</small>
+                        </div>
+                        <div style="text-align: center; padding: 10px; background: #fff3cd; border-radius: 8px;">
+                            <strong>⭐ Pro Features</strong><br>
+                            <small>Unlock unlimited AI searches</small><br>
+                            <button class="btn" onclick="document.querySelector('.cta-section').scrollIntoView({behavior: 'smooth'})" style="padding: 5px 10px; font-size: 12px; margin-top: 5px;">Upgrade Now</button>
+                        </div>
+                    `;
+                } else if (currentUser.plan === 'pro') {
+                    dashboardHTML = `
+                        <div style="text-align: center; padding: 10px; background: #e3f2fd; border-radius: 8px;">
+                            <strong>🚀 Pro Member</strong><br>
+                            <small>Unlimited searches active</small><br>
+                            <small>All premium features unlocked</small>
+                        </div>
+                        <div style="text-align: center; padding: 10px; background: #f3e5f5; border-radius: 8px;">
+                            <strong>💼 Business Upgrade</strong><br>
+                            <small>White-label API access</small><br>
+                            <button class="btn" onclick="alert('Contact sales for Business plan: shubhmittal8971wc@gmail.com')" style="padding: 5px 10px; font-size: 12px; margin-top: 5px;">Learn More</button>
+                        </div>
+                    `;
+                } else if (currentUser.plan === 'business') {
+                    dashboardHTML = `
+                        <div style="text-align: center; padding: 10px; background: #fff3e0; border-radius: 8px;">
+                            <strong>🏢 Business Member</strong><br>
+                            <small>Enterprise features active</small><br>
+                            <small>White-label API available</small>
+                        </div>
+                        <div style="text-align: center; padding: 10px; background: #e8f5e8; border-radius: 8px;">
+                            <strong>📞 Support</strong><br>
+                            <small>Dedicated account manager</small><br>
+                            <small>Priority assistance</small>
+                        </div>
+                    `;
+                }
+
+                userDashboard.innerHTML = dashboardHTML;
 
                 // Update CTA buttons based on user plan
                 updateCTAButtons();
+
+                // Update welcome message
+                updateWelcomeMessage();
             } else {
                 userBar.style.display = 'none';
             }
+        }
+
+        function updateWelcomeMessage() {
+            const welcomeMessage = `<strong>👋 Welcome back, ${currentUser.name}!</strong><br>
+                You're on the ${currentUser.plan.toUpperCase()} plan with ${currentUser.plan === 'free' ? 'limited' : 'unlimited'} searches.<br>
+                Try our AI shopping assistant below!`;
+
+            showResult('voiceResult', welcomeMessage, 'success');
         }
 
         function updateCTAButtons() {
