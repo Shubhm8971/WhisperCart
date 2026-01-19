@@ -664,17 +664,10 @@
                     productBadge = '<div style="background: #FF9800; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-bottom: 5px; display: inline-block;">BULK DISCOUNT</div>';
                 }
 
-                const productInfo = {
-                    name: product.name,
-                    price: negotiatedPrice,
-                    store: product.store,
-                    savings: savings,
-                    category: category,
-                    userTier: userTier
-                };
+                const productIndex = affordable.indexOf(product); // Get product index for reference
 
                 html += `
-                    <div class="product-card" onclick="showProductModal('${JSON.stringify(productInfo).replace(/'/g, "\\'")}')" style="cursor: pointer;">
+                    <div class="product-card" onclick="showProductModal(${productIndex}, '${category}', ${negotiatedPrice}, '${product.store}', ${savings}, '${userTier}', '${product.name.replace(/'/g, "\\'")}', '${product.url}')" style="cursor: pointer;">
                         ${productBadge}
                         <div class="product-emoji">${product.emoji}</div>
                         <div class="product-name">${product.name}</div>
@@ -1015,23 +1008,21 @@
         // Product Modal Functions
         let currentProductUrl = '';
 
-        function showProductModal(productDataJson) {
+        function showProductModal(productIndex, category, price, store, savings, userTier, name, url) {
             try {
-                const productData = JSON.parse(productDataJson);
-
                 // Update modal content
-                document.getElementById('productEmoji').textContent = getEmojiForCategory(productData.category);
-                document.getElementById('productName').textContent = productData.name;
-                document.getElementById('productPrice').textContent = `₹${productData.price.toLocaleString()}`;
-                document.getElementById('productStore').textContent = productData.store;
-                document.getElementById('productSavings').textContent = `Save ₹${productData.savings.toLocaleString()}`;
+                document.getElementById('productEmoji').textContent = getEmojiForCategory(category);
+                document.getElementById('productName').textContent = name;
+                document.getElementById('productPrice').textContent = `₹${price.toLocaleString()}`;
+                document.getElementById('productStore').textContent = store;
+                document.getElementById('productSavings').textContent = `Save ₹${savings.toLocaleString()}`;
 
                 // Generate purchase URL
-                currentProductUrl = generateAffiliateUrl(productData.url || '#');
+                currentProductUrl = generateAffiliateUrl(url || '#');
 
                 // Show tier benefits
                 let tierBenefits = '';
-                if (productData.userTier === 'free') {
+                if (userTier === 'free') {
                     tierBenefits = `
                         <strong>🎁 Free Plan Benefits:</strong><br>
                         • AI-negotiated prices (15% savings)<br>
@@ -1039,7 +1030,7 @@
                         • Limited to 5 searches/day<br><br>
                         <strong>💡 Upgrade to Pro for 25% better deals!</strong>
                     `;
-                } else if (productData.userTier === 'pro') {
+                } else if (userTier === 'pro') {
                     tierBenefits = `
                         <strong>🚀 Pro Exclusive Benefits:</strong><br>
                         • 25% better prices than Free users<br>
@@ -1047,7 +1038,7 @@
                         • Premium AI features<br>
                         • Priority support
                     `;
-                } else if (productData.userTier === 'business') {
+                } else if (userTier === 'business') {
                     tierBenefits = `
                         <strong>🏢 Business Elite Benefits:</strong><br>
                         • Maximum 30% savings<br>
@@ -1063,7 +1054,7 @@
                 document.getElementById('productModal').style.display = 'block';
 
             } catch (error) {
-                console.error('Error parsing product data:', error);
+                console.error('Error loading product modal:', error);
                 alert('Sorry, there was an error loading the product details.');
             }
         }
