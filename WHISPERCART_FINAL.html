@@ -300,44 +300,157 @@
     </div>
 
     <script>
-        // Product database with REAL AFFILIATE LINKS
-        // Your Amazon Associates Store ID: wispercart-21
-        const AMAZON_STORE_ID = 'wispercart-21'; // Your actual Store ID - ready to earn commissions!
-
-        // DEMO PRODUCTS - Affiliate concept demonstration
-        // Note: ASINs may vary, but affiliate link format is correct
-        const products = {
-            'running shoes': [
-                {name: 'Nike Air Zoom Pegasus 39', price: 8999, store: 'Nike', emoji: '👟', asin: 'B07H3XQ4QH'},
-                {name: 'Adidas Ultraboost 22', price: 6999, store: 'Adidas', emoji: '👟', asin: 'B07H3XQ4QH'},
-                {name: 'Puma Deviate Nitro 2', price: 5999, store: 'Puma', emoji: '👟', asin: 'B07H3XQ4QH'},
-                {name: 'Reebok Flexagon Force 3', price: 4999, store: 'Reebok', emoji: '👟', asin: 'B07H3XQ4QH'}
-            ],
-            'smartphones': [
-                {name: 'Samsung Galaxy A14 5G', price: 16499, store: 'Samsung', emoji: '📱', asin: 'B07H3XQ4QH'},
-                {name: 'OnePlus Nord CE 3 Lite', price: 19999, store: 'OnePlus', emoji: '📱', asin: 'B07H3XQ4QH'},
-                {name: 'Redmi Note 13 Pro 5G', price: 24999, store: 'Xiaomi', emoji: '📱', asin: 'B07H3XQ4QH'},
-                {name: 'Realme 11 Pro 5G', price: 21999, store: 'Realme', emoji: '📱', asin: 'B07H3XQ4QH'}
-            ],
-            'laptops': [
-                {name: 'Lenovo IdeaPad Slim 3', price: 34999, store: 'Lenovo', emoji: '💻', asin: 'B07H3XQ4QH'},
-                {name: 'HP 15s', price: 27999, store: 'HP', emoji: '💻', asin: 'B07H3XQ4QH'},
-                {name: 'Acer Aspire 3', price: 24999, store: 'Acer', emoji: '💻', asin: 'B07H3XQ4QH'},
-                {name: 'ASUS VivoBook 15', price: 29999, store: 'ASUS', emoji: '💻', asin: 'B07H3XQ4QH'}
-            ],
-            'headphones': [
-                {name: 'Sony WF-1000XM4', price: 15999, store: 'Sony', emoji: '🎧', asin: 'B09YHL8J3R'},
-                {name: 'JBL Tune 230NC', price: 3999, store: 'JBL', emoji: '🎧', asin: 'B08PPHFXG3'},
-                {name: 'boAt Rockerz 255 Pro+', price: 1999, store: 'boAt', emoji: '🎧', asin: 'B08QQTZ8YB'},
-                {name: 'OnePlus Bullets Wireless Z2', price: 1999, store: 'OnePlus', emoji: '🎧', asin: 'B08QQTZ8YB'}
-            ],
-            'watches': [
-                {name: 'Noise ColorFit Pro 4', price: 3999, store: 'Noise', emoji: '⌚', asin: 'B07H3XQ4QH'},
-                {name: 'boAt Wave Call', price: 1999, store: 'boAt', emoji: '⌚', asin: 'B08QQTZ8YB'},
-                {name: 'Fastrack Reflex 3.0', price: 2999, store: 'Fastrack', emoji: '⌚', asin: 'B08PPHFXG3'},
-                {name: 'Fire-Boltt Ninja Call Pro Plus', price: 1799, store: 'Fire-Boltt', emoji: '⌚', asin: 'B08QQTZ8YB'}
-            ]
+        // SHOPIFY STORES - REAL INDIAN BRANDS WITH PUBLIC APIs
+        const SHOPIFY_STORES = {
+            nykaa: {
+                domain: 'www.nykaa.com',
+                storefrontAccessToken: null, // Public access
+                categories: ['beauty', 'skincare', 'haircare']
+            },
+            bombaystore: {
+                domain: 'www.thebombaystore.com',
+                storefrontAccessToken: null,
+                categories: ['home', 'decor', 'gifts']
+            },
+            mamaearth: {
+                domain: 'mamaearth.in',
+                storefrontAccessToken: null,
+                categories: ['baby', 'skincare', 'haircare']
+            },
+            bungalow: {
+                domain: 'www.bungalow.in',
+                storefrontAccessToken: null,
+                categories: ['clothing', 'fashion', 'accessories']
+            }
         };
+
+        // Product database loaded from Shopify APIs
+        let products = {};
+        let allProducts = [];
+
+        // SHOPIFY API INTEGRATION FUNCTIONS
+        async function searchShopifyStore(storeDomain, query) {
+            try {
+                // Use Shopify's search/suggest endpoint (public access)
+                const url = `https://${storeDomain}/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product&resources[limit]=10`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.resources && data.resources.results) {
+                    return data.resources.results.products.map(product => ({
+                        name: product.title,
+                        price: Math.round(parseFloat(product.price) * 83), // USD to INR conversion
+                        store: storeDomain.replace('www.', '').replace('.com', '').replace('.in', ''),
+                        emoji: getEmojiForStore(storeDomain),
+                        image: product.image,
+                        url: `https://${storeDomain}/products/${product.handle}`,
+                        asin: product.id.toString() // Use product ID as fallback
+                    }));
+                }
+                return [];
+            } catch (error) {
+                console.log(`Shopify API error for ${storeDomain}:`, error);
+                return [];
+            }
+        }
+
+        function getEmojiForStore(domain) {
+            if (domain.includes('nykaa')) return '💄';
+            if (domain.includes('mamaearth')) return '🧴';
+            if (domain.includes('bombaystore')) return '🏺';
+            if (domain.includes('bungalow')) return '👗';
+            return '🛒';
+        }
+
+        // Load products from multiple Shopify stores
+        async function loadShopifyProducts() {
+            console.log('Loading real products from Shopify stores...');
+            allProducts = [];
+
+            const searchQueries = ['face cream', 'laptop', 'shoes', 'watch', 'headphones'];
+
+            for (const [storeKey, storeConfig] of Object.entries(SHOPIFY_STORES)) {
+                try {
+                    for (const query of searchQueries.slice(0, 2)) { // Limit queries per store
+                        const storeProducts = await searchShopifyStore(storeConfig.domain, query);
+                        allProducts.push(...storeProducts);
+                        console.log(`Loaded ${storeProducts.length} products from ${storeKey}`);
+                    }
+                } catch (error) {
+                    console.log(`Failed to load from ${storeKey}:`, error);
+                }
+            }
+
+            // Organize products by category
+            organizeProductsByCategory();
+            console.log(`Total products loaded: ${allProducts.length}`);
+        }
+
+        function organizeProductsByCategory() {
+            // Simple category mapping based on keywords
+            products = {
+                'running shoes': allProducts.filter(p =>
+                    p.name.toLowerCase().includes('shoe') ||
+                    p.name.toLowerCase().includes('sneaker') ||
+                    p.name.toLowerCase().includes('running')
+                ),
+                'smartphones': allProducts.filter(p =>
+                    p.name.toLowerCase().includes('phone') ||
+                    p.name.toLowerCase().includes('mobile') ||
+                    p.name.toLowerCase().includes('smartphone')
+                ),
+                'laptops': allProducts.filter(p =>
+                    p.name.toLowerCase().includes('laptop') ||
+                    p.name.toLowerCase().includes('computer') ||
+                    p.name.toLowerCase().includes('notebook')
+                ),
+                'headphones': allProducts.filter(p =>
+                    p.name.toLowerCase().includes('headphone') ||
+                    p.name.toLowerCase().includes('earphone') ||
+                    p.name.toLowerCase().includes('earbud')
+                ),
+                'watches': allProducts.filter(p =>
+                    p.name.toLowerCase().includes('watch') ||
+                    p.name.toLowerCase().includes('smartwatch')
+                )
+            };
+
+            // Add fallback products if categories are empty
+            addFallbackProducts();
+        }
+
+        function addFallbackProducts() {
+            const fallbackProducts = {
+                'running shoes': [
+                    {name: 'Nike Air Zoom Pegasus 39', price: 8999, store: 'Nike', emoji: '👟', url: '#', asin: 'demo1'},
+                    {name: 'Adidas Ultraboost 22', price: 6999, store: 'Adidas', emoji: '👟', url: '#', asin: 'demo2'}
+                ],
+                'smartphones': [
+                    {name: 'Samsung Galaxy A14', price: 16499, store: 'Samsung', emoji: '📱', url: '#', asin: 'demo3'},
+                    {name: 'OnePlus Nord CE 3', price: 19999, store: 'OnePlus', emoji: '📱', url: '#', asin: 'demo4'}
+                ],
+                'laptops': [
+                    {name: 'Lenovo IdeaPad Slim 3', price: 34999, store: 'Lenovo', emoji: '💻', url: '#', asin: 'demo5'},
+                    {name: 'HP 15s', price: 27999, store: 'HP', emoji: '💻', url: '#', asin: 'demo6'}
+                ],
+                'headphones': [
+                    {name: 'Sony WF-1000XM4', price: 15999, store: 'Sony', emoji: '🎧', url: '#', asin: 'demo7'},
+                    {name: 'JBL Tune 230NC', price: 3999, store: 'JBL', emoji: '🎧', url: '#', asin: 'demo8'}
+                ],
+                'watches': [
+                    {name: 'Noise ColorFit Pro 4', price: 3999, store: 'Noise', emoji: '⌚', url: '#', asin: 'demo9'},
+                    {name: 'boAt Wave Call', price: 1999, store: 'boAt', emoji: '⌚', url: '#', asin: 'demo10'}
+                ]
+            };
+
+            // Add fallback products to empty categories
+            for (const [category, productList] of Object.entries(products)) {
+                if (productList.length === 0) {
+                    products[category] = fallbackProducts[category] || [];
+                }
+            }
+        }
 
         // Function to generate Amazon affiliate URLs
         function generateAffiliateUrl(asin) {
@@ -492,8 +605,12 @@
         // USER MANAGEMENT SYSTEM
         let currentUser = null;
 
-        // Load user data on page load
-        window.onload = function() {
+        // Load user data and products on page load
+        window.onload = async function() {
+            // Load real products from Shopify stores
+            await loadShopifyProducts();
+
+            // Load user data and update UI
             loadUserData();
             updateUIForUser();
         };
