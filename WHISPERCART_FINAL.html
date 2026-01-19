@@ -57,15 +57,67 @@
         .cta-title { font-size: 2.5em; color: #667eea; margin-bottom: 20px; }
         .cta-subtitle { font-size: 1.2em; color: #666; margin-bottom: 30px; }
 
+        /* User Registration Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); }
+        .modal-content { background: white; margin: 10% auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: #667eea; }
+        .user-info { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 20px; }
+        .user-tier { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .tier-free { background: #4CAF50; color: white; }
+        .tier-pro { background: #667eea; color: white; }
+        .tier-business { background: #FF9800; color: white; }
+
         @media (max-width: 768px) {
             .demo-grid { grid-template-columns: 1fr; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .story-grid { grid-template-columns: 1fr; }
             .logo { font-size: 3em; }
+            .modal-content { margin: 20% auto; width: 95%; }
         }
     </style>
 </head>
 <body>
+    <!-- User Registration Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle" style="color: #667eea; margin-bottom: 20px;">Join WhisperCart</h2>
+
+            <div id="registerForm">
+                <div class="input-group">
+                    <label>Name</label>
+                    <input type="text" id="regName" placeholder="Your full name">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="your@email.com">
+                </div>
+                <div class="input-group">
+                    <label>Choose Plan</label>
+                    <select id="regPlan">
+                        <option value="free">Free Plan (₹0)</option>
+                        <option value="pro">Pro Plan (₹299/month)</option>
+                        <option value="business">Business Plan (₹999/month)</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="registerUser()" style="width: 100%; margin-bottom: 15px;">Create Account</button>
+                <p style="text-align: center; color: #666; margin-bottom: 15px;">Already have an account?</p>
+                <button class="btn" onclick="showLogin()" style="width: 100%; background: #4CAF50;">Login Instead</button>
+            </div>
+
+            <div id="loginForm" style="display: none;">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="your@email.com">
+                </div>
+                <button class="btn" onclick="loginUser()" style="width: 100%; margin-bottom: 15px;">Login</button>
+                <p style="text-align: center; color: #666; margin-bottom: 15px;">New to WhisperCart?</p>
+                <button class="btn" onclick="showRegister()" style="width: 100%; background: #4CAF50;">Create Account</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <header class="header">
             <div class="logo">🛒 WhisperCart</div>
@@ -74,6 +126,12 @@
                 <strong>🎯 Problem:</strong> People waste hours comparing prices manually<br>
                 <strong>💡 Solution:</strong> AI does it instantly with voice commands<br>
                 <strong>🚀 Result:</strong> Save time, money, and frustration
+            </div>
+
+            <!-- User Status Bar -->
+            <div id="userBar" style="display: none; background: rgba(255,255,255,0.9); color: #333; padding: 15px; border-radius: 10px; margin-top: 20px; text-align: center;">
+                <div id="userInfo"></div>
+                <button class="btn" onclick="logoutUser()" style="margin-top: 10px; padding: 8px 16px; font-size: 14px;">Logout</button>
             </div>
         </header>
 
@@ -428,12 +486,243 @@
             document.getElementById('negotiations').textContent = stats.negotiations;
         }
 
+        // USER MANAGEMENT SYSTEM
+        let currentUser = null;
+
+        // Load user data on page load
+        window.onload = function() {
+            loadUserData();
+            updateUIForUser();
+        };
+
+        function loadUserData() {
+            const userData = localStorage.getItem('whispercart_user');
+            if (userData) {
+                currentUser = JSON.parse(userData);
+            }
+        }
+
+        function saveUserData() {
+            if (currentUser) {
+                localStorage.setItem('whispercart_user', JSON.stringify(currentUser));
+            }
+        }
+
+        function updateUIForUser() {
+            const userBar = document.getElementById('userBar');
+            const userInfo = document.getElementById('userInfo');
+
+            if (currentUser) {
+                userBar.style.display = 'block';
+                const tierClass = `tier-${currentUser.plan}`;
+                userInfo.innerHTML = `
+                    <strong>Welcome back, ${currentUser.name}!</strong><br>
+                    <span class="user-tier ${tierClass}">${currentUser.plan.toUpperCase()} PLAN</span><br>
+                    <small>${currentUser.email}</small>
+                `;
+
+                // Update CTA buttons based on user plan
+                updateCTAButtons();
+            } else {
+                userBar.style.display = 'none';
+            }
+        }
+
+        function updateCTAButtons() {
+            const ctaSection = document.querySelector('.cta-section');
+            if (currentUser && currentUser.plan !== 'free') {
+                // User already has a paid plan
+                ctaSection.innerHTML = `
+                    <div class="cta-title">🎉 Welcome to ${currentUser.plan.toUpperCase()} Plan!</div>
+                    <div class="cta-subtitle">
+                        Enjoy all premium features of WhisperCart.<br>
+                        Your subscription is active and renewing automatically.
+                    </div>
+                    <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                        <strong>📧 Contact:</strong> shubhmittal8971wc@gmail.com<br>
+                        <strong>💼 Business:</strong> AI Shopping Assistant Startup<br>
+                        <strong>🎯 Mission:</strong> Make online shopping effortless and affordable for everyone<br>
+                        <strong>💳 Your Plan:</strong> ${currentUser.plan.toUpperCase()} | Next billing: Monthly
+                    </div>
+                `;
+            }
+        }
+
+        // Modal functions
+        function showModal() {
+            document.getElementById('authModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('authModal').style.display = 'none';
+        }
+
+        function showLogin() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('modalTitle').textContent = 'Welcome Back';
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('modalTitle').textContent = 'Join WhisperCart';
+        }
+
+        // User registration
+        function registerUser() {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const plan = document.getElementById('regPlan').value;
+
+            if (!name || !email) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Check if user already exists
+            const existingUsers = JSON.parse(localStorage.getItem('whispercart_users') || '[]');
+            const userExists = existingUsers.find(user => user.email === email);
+
+            if (userExists) {
+                alert('An account with this email already exists. Please login instead.');
+                showLogin();
+                return;
+            }
+
+            // Create new user
+            currentUser = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                plan: plan,
+                joinedDate: new Date().toISOString(),
+                searchesUsed: 0,
+                lastLogin: new Date().toISOString()
+            };
+
+            // Save to users list
+            existingUsers.push(currentUser);
+            localStorage.setItem('whispercart_users', JSON.stringify(existingUsers));
+
+            // Save current user
+            saveUserData();
+
+            // Update UI
+            updateUIForUser();
+            closeModal();
+
+            // Show welcome message
+            alert(`🎉 Welcome to WhisperCart, ${name}!\n\nYou've successfully registered for the ${plan.toUpperCase()} plan.\n\n${plan === 'free' ? 'Start exploring our AI features!' : 'Your premium features are now unlocked!'}`);
+
+            // Show upgrade prompt for free users
+            if (plan === 'free') {
+                setTimeout(() => {
+                    if (confirm('Want to unlock unlimited searches and premium AI features? Upgrade to Pro plan now!')) {
+                        // Scroll to pricing section
+                        document.querySelector('.cta-section').scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 3000);
+            }
+        }
+
+        // User login
+        function loginUser() {
+            const email = document.getElementById('loginEmail').value.trim();
+
+            if (!email) {
+                alert('Please enter your email');
+                return;
+            }
+
+            // Find user
+            const existingUsers = JSON.parse(localStorage.getItem('whispercart_users') || '[]');
+            const user = existingUsers.find(user => user.email === email);
+
+            if (!user) {
+                alert('No account found with this email. Please register first.');
+                showRegister();
+                return;
+            }
+
+            // Login successful
+            currentUser = user;
+            currentUser.lastLogin = new Date().toISOString();
+            saveUserData();
+
+            // Update users list
+            const userIndex = existingUsers.findIndex(u => u.id === user.id);
+            existingUsers[userIndex] = currentUser;
+            localStorage.setItem('whispercart_users', JSON.stringify(existingUsers));
+
+            // Update UI
+            updateUIForUser();
+            closeModal();
+
+            alert(`👋 Welcome back, ${user.name}!\n\nYou're logged in to your ${user.plan.toUpperCase()} plan.`);
+        }
+
+        // Logout
+        function logoutUser() {
+            currentUser = null;
+            localStorage.removeItem('whispercart_user');
+            updateUIForUser();
+            alert('You have been logged out. Come back soon! 👋');
+        }
+
+        // Feature gating based on subscription
+        function checkFeatureAccess(feature) {
+            if (!currentUser) {
+                showModal();
+                return false;
+            }
+
+            if (currentUser.plan === 'free') {
+                if (feature === 'unlimited_searches' && currentUser.searchesUsed >= 5) {
+                    alert('You\'ve reached your 5 daily searches limit. Upgrade to Pro for unlimited searches!');
+                    document.querySelector('.cta-section').scrollIntoView({ behavior: 'smooth' });
+                    return false;
+                }
+                if (['advanced_filters', 'export_lists', 'price_history'].includes(feature)) {
+                    alert(`This is a Pro feature! Upgrade to unlock ${feature.replace('_', ' ')}.`);
+                    document.querySelector('.cta-section').scrollIntoView({ behavior: 'smooth' });
+                    return false;
+                }
+            }
+
+            if (currentUser.plan === 'pro') {
+                if (['white_label', 'custom_integrations', 'team_tools'].includes(feature)) {
+                    alert(`This is a Business feature! Contact sales for enterprise solutions.`);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // Track usage for free users
+        function trackUsage(feature) {
+            if (currentUser && currentUser.plan === 'free') {
+                if (feature === 'search') {
+                    currentUser.searchesUsed++;
+                    saveUserData();
+                }
+            }
+        }
+
         // Initialize with welcome message
         setTimeout(() => {
-            showResult('voiceResult',
-                '<strong>👋 Welcome to WhisperCart!</strong><br>' +
-                'Try typing: "I want running shoes under 3000 rupees"<br>' +
-                'Or click "Show Random Demo" to see AI in action!', 'success');
+            let welcomeMessage = '<strong>👋 Welcome to WhisperCart!</strong><br>';
+            if (currentUser) {
+                welcomeMessage += `Hello ${currentUser.name}! `;
+            }
+            welcomeMessage += 'Try typing: "I want running shoes under 3000 rupees"<br>Or click "Show Random Demo" to see AI in action!';
+
+            if (!currentUser) {
+                welcomeMessage += '<br><br><button class="btn" onclick="showModal()" style="margin-top: 10px; padding: 8px 16px; font-size: 14px;">Join WhisperCart</button>';
+            }
+
+            showResult('voiceResult', welcomeMessage, 'success');
         }, 500);
     </script>
 </body>
