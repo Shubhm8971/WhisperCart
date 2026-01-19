@@ -227,19 +227,18 @@
 
         // Function to generate Amazon affiliate URLs
         function generateAffiliateUrl(asin) {
-            if (AMAZON_STORE_ID === 'YOUR_AMAZON_STORE_ID') {
-                // Demo mode - show placeholder URL
-                return `https://amazon.in/dp/${asin}?tag=YOUR_STORE_ID`;
-            }
-            return `https://amazon.in/dp/${asin}?tag=${AMAZON_STORE_ID}`;
+            // Amazon Associates link format
+            const baseUrl = `https://www.amazon.in/dp/${asin}`;
+            const affiliateParams = `?tag=${AMAZON_STORE_ID}&linkCode=ll1&language=en_IN&ref_=as_li_ss_tl`;
+
+            return baseUrl + affiliateParams;
         }
 
         // Function to open affiliate links (tracks clicks for commission)
         function openAffiliateLink(url) {
-            alert(`🎯 Affiliate Link: ${url}\n\nThis link will earn you commission when someone purchases through it!\n\nReplace 'YOUR_AMAZON_STORE_ID' with your real Store ID to start earning.`);
+            alert(`🎯 Amazon Affiliate Link:\n${url}\n\n✅ This link includes your Store ID: ${AMAZON_STORE_ID}\n💰 You earn commission on purchases!\n\n📱 Link will open in new tab for testing.`);
             window.open(url, '_blank');
             console.log('🎯 Affiliate link clicked:', url);
-            // In production, this would track the click for analytics
         }
 
         let stats = { searches: 0, savings: 0, products: 0, negotiations: 0 };
