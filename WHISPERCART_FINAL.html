@@ -1271,65 +1271,111 @@
 
             // Check if browser supports speech recognition
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert('Sorry, your browser doesn\'t support voice input. Please type your request instead.');
+                voiceStatus.style.display = 'block';
+                voiceStatus.textContent = '❌ Voice input not supported in this browser. Please type your request instead.';
+                voiceStatus.style.color = '#f44336';
                 return;
             }
 
-            // Initialize speech recognition
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
+            // Check if we're on HTTPS (required for voice input)
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                voiceStatus.style.display = 'block';
+                voiceStatus.textContent = '🔒 Voice input requires HTTPS. Deploy to production or use localhost for voice features.';
+                voiceStatus.style.color = '#FF9800';
+                return;
+            }
 
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.lang = 'en-IN'; // Indian English
+            // Request microphone permission and initialize
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(function(stream) {
+                        // Permission granted, proceed with voice recognition
+                        initializeVoiceRecognition();
+                        // Stop the stream immediately as we don't need it for speech recognition
+                        stream.getTracks().forEach(track => track.stop());
+                    })
+                    .catch(function(error) {
+                        console.error('Microphone permission denied:', error);
+                        voiceStatus.style.display = 'block';
+                        voiceStatus.textContent = '🎤 Microphone access denied. Please allow microphone access and try again, or type your request.';
+                        voiceStatus.style.color = '#f44336';
+                    });
+            } else {
+                // Fallback for older browsers
+                initializeVoiceRecognition();
+            }
 
-            // Visual feedback
-            voiceStatus.style.display = 'block';
-            voiceStatus.textContent = '🎤 Listening... Speak now!';
-            voiceStatus.style.color = '#4CAF50';
-            voiceBtn.style.background = '#f44336';
+            function initializeVoiceRecognition() {
+                try {
+                    // Initialize speech recognition
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    recognition = new SpeechRecognition();
 
-            recognition.onstart = function() {
-                console.log('Voice recognition started');
-            };
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
+                    recognition.lang = 'en-IN'; // Indian English
 
-            recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript;
-                console.log('Voice transcript:', transcript);
+                    // Visual feedback
+                    voiceStatus.style.display = 'block';
+                    voiceStatus.textContent = '🎤 Listening... Speak now! (Click "Allow" if prompted for microphone)';
+                    voiceStatus.style.color = '#4CAF50';
+                    voiceBtn.style.background = '#f44336';
 
-                voiceInput.value = transcript;
-                voiceStatus.textContent = '✅ Voice captured: "' + transcript + '"';
-                voiceStatus.style.color = '#4CAF50';
-                voiceBtn.style.background = '#4CAF50';
+                    recognition.onstart = function() {
+                        console.log('Voice recognition started');
+                        voiceStatus.textContent = '🎤 Listening... Speak your shopping request now!';
+                    };
 
-                // Auto-process after 1 second
-                setTimeout(() => {
-                    processVoice();
-                }, 1000);
-            };
+                    recognition.onresult = function(event) {
+                        const transcript = event.results[0][0].transcript;
+                        console.log('Voice transcript:', transcript);
 
-            recognition.onerror = function(event) {
-                console.error('Speech recognition error:', event.error);
-                voiceStatus.textContent = '❌ Voice recognition failed. Please try again or type your request.';
-                voiceStatus.style.color = '#f44336';
-                voiceBtn.style.background = '#4CAF50';
-            };
+                        voiceInput.value = transcript;
+                        voiceStatus.textContent = '✅ Voice captured: "' + transcript + '"';
+                        voiceStatus.style.color = '#4CAF50';
+                        voiceBtn.style.background = '#4CAF50';
 
-            recognition.onend = function() {
-                console.log('Voice recognition ended');
-                // Reset button after a delay
-                setTimeout(() => {
+                        // Auto-process after 1 second
+                        setTimeout(() => {
+                            processVoice();
+                        }, 1000);
+                    };
+
+                    recognition.onerror = function(event) {
+                        console.error('Speech recognition error:', event.error, event);
+
+                        let errorMessage = '❌ Voice recognition failed.';
+                        if (event.error === 'not-allowed') {
+                            errorMessage += ' Microphone access denied. Please allow microphone access and try again.';
+                        } else if (event.error === 'no-speech') {
+                            errorMessage += ' No speech detected. Please speak clearly and try again.';
+                        } else if (event.error === 'network') {
+                            errorMessage += ' Network error. Check your internet connection.';
+                        } else {
+                            errorMessage += ' Please try again or type your request instead.';
+                        }
+
+                        voiceStatus.textContent = errorMessage;
+                        voiceStatus.style.color = '#f44336';
+                        voiceBtn.style.background = '#4CAF50';
+                    };
+
+                    recognition.onend = function() {
+                        console.log('Voice recognition ended');
+                        // Reset button after a delay
+                        setTimeout(() => {
+                            voiceBtn.style.background = '#4CAF50';
+                        }, 2000);
+                    };
+
+                    recognition.start();
+                } catch (error) {
+                    console.error('Error initializing voice recognition:', error);
+                    voiceStatus.style.display = 'block';
+                    voiceStatus.textContent = '❌ Voice recognition not available. Please type your request instead.';
+                    voiceStatus.style.color = '#f44336';
                     voiceBtn.style.background = '#4CAF50';
-                }, 2000);
-            };
-
-            try {
-                recognition.start();
-            } catch (error) {
-                console.error('Error starting voice recognition:', error);
-                voiceStatus.textContent = '❌ Could not start voice recognition. Please type your request.';
-                voiceStatus.style.color = '#f44336';
-                voiceBtn.style.background = '#4CAF50';
+                }
             }
         }
 
