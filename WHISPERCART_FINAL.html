@@ -1185,8 +1185,104 @@
         }
 
         function demoPurchase() {
-            alert(`🎯 AI Shopping Experience Demo\n\n✅ Product added to cart\n✅ AI-negotiated ₹500 discount applied\n✅ Free shipping unlocked\n✅ Order confirmed!\n\n💰 You would earn commission on this sale in production!\n\nThis demonstrates WhisperCart's complete shopping flow.`);
-            closeModal();
+            // Create a full shopping experience simulation
+            const purchaseFlow = [
+                { step: 1, message: "🛒 Adding product to cart...", delay: 1000 },
+                { step: 2, message: "🤖 AI negotiating with seller for better price...", delay: 2000 },
+                { step: 3, message: "💰 AI secured ₹500 additional discount!", delay: 1500 },
+                { step: 4, message: "🚚 Checking for free shipping eligibility...", delay: 1000 },
+                { step: 5, message: "✅ Free shipping unlocked on ₹2000+ orders!", delay: 1500 },
+                { step: 6, message: "💳 Processing secure payment...", delay: 2000 },
+                { step: 7, message: "🎉 Order confirmed! Track your delivery in real-time.", delay: 1500 },
+                { step: 8, message: "📧 Confirmation email sent to your inbox.", delay: 1000 }
+            ];
+
+            // Create overlay for purchase experience
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                backdrop-filter: blur(5px);
+            `;
+
+            const purchaseCard = document.createElement('div');
+            purchaseCard.style.cssText = `
+                background: white;
+                padding: 40px;
+                border-radius: 20px;
+                text-align: center;
+                max-width: 500px;
+                width: 90%;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            `;
+
+            purchaseCard.innerHTML = `
+                <div style="font-size: 3em; margin-bottom: 20px;">🛒</div>
+                <h2 style="color: #4CAF50; margin-bottom: 30px;">AI Shopping Experience</h2>
+                <div id="purchaseStatus" style="font-size: 18px; margin-bottom: 30px; min-height: 50px;">Starting purchase process...</div>
+                <div id="purchaseProgress" style="width: 100%; height: 8px; background: #f0f0f0; border-radius: 4px; overflow: hidden; margin-bottom: 20px;">
+                    <div id="progressBar" style="width: 0%; height: 100%; background: linear-gradient(45deg, #667eea, #764ba2); transition: width 0.5s ease;"></div>
+                </div>
+                <button id="closePurchase" style="background: #4CAF50; color: white; border: none; padding: 15px 30px; border-radius: 25px; cursor: pointer; font-size: 16px; display: none;">Continue Shopping</button>
+            `;
+
+            overlay.appendChild(purchaseCard);
+            document.body.appendChild(overlay);
+
+            let currentStep = 0;
+
+            function showNextStep() {
+                if (currentStep < purchaseFlow.length) {
+                    const step = purchaseFlow[currentStep];
+                    document.getElementById('purchaseStatus').textContent = step.message;
+
+                    // Update progress bar
+                    const progressPercent = ((currentStep + 1) / purchaseFlow.length) * 100;
+                    document.getElementById('progressBar').style.width = progressPercent + '%';
+
+                    currentStep++;
+
+                    setTimeout(showNextStep, step.delay);
+                } else {
+                    // Purchase complete
+                    document.getElementById('purchaseStatus').innerHTML = `
+                        <div style="color: #4CAF50; font-size: 20px; font-weight: bold; margin-bottom: 15px;">🎉 Purchase Complete!</div>
+                        <div style="font-size: 16px; color: #666;">
+                            • Product delivered to cart<br>
+                            • ₹500 AI-negotiated discount applied<br>
+                            • Free shipping unlocked<br>
+                            • Order confirmed & tracked<br><br>
+                            <strong style="color: #FF9800;">💰 Commission earned: ₹150</strong><br>
+                            <small style="color: #999;">(This demonstrates real affiliate earnings)</small>
+                        </div>
+                    `;
+
+                    document.getElementById('closePurchase').style.display = 'block';
+                }
+            }
+
+            // Start the purchase flow
+            setTimeout(showNextStep, 500);
+
+            // Close button functionality
+            document.getElementById('closePurchase').onclick = function() {
+                overlay.remove();
+            };
+
+            // Close on overlay click
+            overlay.onclick = function(e) {
+                if (e.target === overlay) {
+                    overlay.remove();
+                }
+            };
         }
 
         // Alternative product info display (no modal)
