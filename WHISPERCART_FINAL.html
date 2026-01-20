@@ -265,9 +265,15 @@
                 <div class="demo-title">🎤 Voice Shopping Demo</div>
                 <div class="input-group">
                     <label>What do you want to buy?</label>
-                    <input type="text" id="voiceInput" placeholder="Try: 'I want running shoes under 3000 rupees'" value="I want running shoes under 3000 rupees">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" id="voiceInput" placeholder="Try: 'I want running shoes under 3000 rupees'" value="I want running shoes under 3000 rupees" style="flex: 1;">
+                        <button id="voiceBtn" onclick="startVoiceInput()" style="padding: 12px; background: #4CAF50; border: none; border-radius: 50%; cursor: pointer; width: 50px; height: 50px;">
+                            🎤
+                        </button>
+                    </div>
+                    <div id="voiceStatus" style="font-size: 12px; color: #666; margin-top: 5px; display: none;"></div>
                 </div>
-                <button class="btn" onclick="processVoice()" style="width: 100%; margin-bottom: 10px;">🎤 Process Voice Request</button>
+                <button class="btn" onclick="processVoice()" style="width: 100%; margin-bottom: 10px;">🔍 Process Request</button>
                 <button class="btn" onclick="showRandomDemo()" style="width: 100%; background: #4CAF50;">🎲 Show Random Demo</button>
                 <div id="voiceResult"></div>
             </div>
@@ -1255,13 +1261,85 @@
             return emojiMap[category] || '🛒';
         }
 
+        // Voice input functionality using Web Speech API
+        let recognition = null;
+
+        function startVoiceInput() {
+            const voiceInput = document.getElementById('voiceInput');
+            const voiceStatus = document.getElementById('voiceStatus');
+            const voiceBtn = document.getElementById('voiceBtn');
+
+            // Check if browser supports speech recognition
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert('Sorry, your browser doesn\'t support voice input. Please type your request instead.');
+                return;
+            }
+
+            // Initialize speech recognition
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-IN'; // Indian English
+
+            // Visual feedback
+            voiceStatus.style.display = 'block';
+            voiceStatus.textContent = '🎤 Listening... Speak now!';
+            voiceStatus.style.color = '#4CAF50';
+            voiceBtn.style.background = '#f44336';
+
+            recognition.onstart = function() {
+                console.log('Voice recognition started');
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                console.log('Voice transcript:', transcript);
+
+                voiceInput.value = transcript;
+                voiceStatus.textContent = '✅ Voice captured: "' + transcript + '"';
+                voiceStatus.style.color = '#4CAF50';
+                voiceBtn.style.background = '#4CAF50';
+
+                // Auto-process after 1 second
+                setTimeout(() => {
+                    processVoice();
+                }, 1000);
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                voiceStatus.textContent = '❌ Voice recognition failed. Please try again or type your request.';
+                voiceStatus.style.color = '#f44336';
+                voiceBtn.style.background = '#4CAF50';
+            };
+
+            recognition.onend = function() {
+                console.log('Voice recognition ended');
+                // Reset button after a delay
+                setTimeout(() => {
+                    voiceBtn.style.background = '#4CAF50';
+                }, 2000);
+            };
+
+            try {
+                recognition.start();
+            } catch (error) {
+                console.error('Error starting voice recognition:', error);
+                voiceStatus.textContent = '❌ Could not start voice recognition. Please type your request.';
+                voiceStatus.style.color = '#f44336';
+                voiceBtn.style.background = '#4CAF50';
+            }
+        }
+
         // Initialize with welcome message
         setTimeout(() => {
             let welcomeMessage = '<strong>👋 Welcome to WhisperCart!</strong><br>';
             if (currentUser) {
                 welcomeMessage += `Hello ${currentUser.name}! `;
             }
-            welcomeMessage += 'Try typing: "I want running shoes under 3000 rupees"<br>Or click "Show Random Demo" to see AI in action!';
+            welcomeMessage += 'Try typing: "I want running shoes under 3000 rupees"<br>Or click the 🎤 microphone to speak your request!<br>Or click "Show Random Demo" to see AI in action!';
 
             if (!currentUser) {
                 welcomeMessage += '<br><br><button class="btn" onclick="showModal()" style="margin-top: 10px; padding: 8px 16px; font-size: 14px;">Join WhisperCart</button>';
