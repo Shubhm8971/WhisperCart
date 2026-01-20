@@ -265,15 +265,9 @@
                 <div class="demo-title">🎤 Voice Shopping Demo</div>
                 <div class="input-group">
                     <label>What do you want to buy?</label>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <input type="text" id="voiceInput" placeholder="Try: 'I want running shoes under 3000 rupees'" value="I want running shoes under 3000 rupees" style="flex: 1;">
-                        <button id="voiceBtn" onclick="startVoiceInput()" style="padding: 12px; background: #4CAF50; border: none; border-radius: 50%; cursor: pointer; width: 50px; height: 50px;">
-                            🎤
-                        </button>
-                    </div>
-                    <div id="voiceStatus" style="font-size: 12px; color: #666; margin-top: 5px; display: none;"></div>
+                    <input type="text" id="voiceInput" placeholder="Try: 'I want running shoes under 3000 rupees'" value="I want running shoes under 3000 rupees">
                 </div>
-                <button class="btn" onclick="processVoice()" style="width: 100%; margin-bottom: 10px;">🔍 Process Request</button>
+                <button class="btn" onclick="processVoice()" style="width: 100%; margin-bottom: 10px;">🤖 Ask AI Assistant</button>
                 <button class="btn" onclick="showRandomDemo()" style="width: 100%; background: #4CAF50;">🎲 Show Random Demo</button>
                 <div id="voiceResult"></div>
             </div>
