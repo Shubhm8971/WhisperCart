@@ -205,7 +205,7 @@
     <!-- Product Details Modal -->
     <div id="productModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
+            <span class="close" id="productModalClose" onclick="closeProductModal()">&times;</span>
             <div class="product-details">
                 <div id="productEmoji" class="product-details-emoji">🛒</div>
                 <div id="productName" class="product-details-name">Product Name</div>
@@ -929,8 +929,44 @@
         }
 
         function closeModal() {
+            // Close any open modal
+            document.getElementById('authModal').style.display = 'none';
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        function closeAuthModal() {
             document.getElementById('authModal').style.display = 'none';
         }
+
+        function closeProductModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        // Add event listeners as backup
+        document.addEventListener('DOMContentLoaded', function() {
+            const authCloseBtn = document.getElementById('authModalClose');
+            const productCloseBtn = document.getElementById('productModalClose');
+
+            if (authCloseBtn) {
+                authCloseBtn.addEventListener('click', closeAuthModal);
+            }
+            if (productCloseBtn) {
+                productCloseBtn.addEventListener('click', closeProductModal);
+            }
+
+            // Also add click outside modal to close
+            document.getElementById('authModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeAuthModal();
+                }
+            });
+
+            document.getElementById('productModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeProductModal();
+                }
+            });
+        });
 
         function showLogin() {
             document.getElementById('registerForm').style.display = 'none';
