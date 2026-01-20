@@ -747,7 +747,7 @@
                 const productIndex = affordable.indexOf(product); // Get product index for reference
 
                 html += `
-                    <div class="product-card" onclick="showProductModal(${productIndex}, '${category}', ${negotiatedPrice}, '${product.store}', ${savings}, '${userTier}', '${product.name.replace(/'/g, "\\'")}', '${product.url}')" style="cursor: pointer;">
+                    <div class="product-card" onclick="showProductInfo('${resultDiv}', ${productIndex}, '${category}', ${negotiatedPrice}, '${product.store}', ${savings}, '${userTier}', '${product.name.replace(/'/g, "\\'")}', '${product.url}')" style="cursor: pointer;">
                         ${productBadge}
                         <div class="product-emoji">${product.emoji}</div>
                         <div class="product-name">${product.name}</div>
@@ -1187,6 +1187,61 @@
         function demoPurchase() {
             alert(`🎯 AI Shopping Experience Demo\n\n✅ Product added to cart\n✅ AI-negotiated ₹500 discount applied\n✅ Free shipping unlocked\n✅ Order confirmed!\n\n💰 You would earn commission on this sale in production!\n\nThis demonstrates WhisperCart's complete shopping flow.`);
             closeModal();
+        }
+
+        // Alternative product info display (no modal)
+        function showProductInfo(divId, productIndex, category, price, store, savings, userTier, name, url) {
+            try {
+                const affiliateUrl = generateAffiliateUrl(url || '#');
+
+                // Create a simple info display instead of modal
+                const infoHTML = `
+                    <div style="background: #e8f5e8; border: 2px solid #4CAF50; border-radius: 15px; padding: 20px; margin: 15px 0;">
+                        <h3 style="color: #2e7d32; margin-bottom: 15px;">🛒 Product Details</h3>
+
+                        <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <strong style="font-size: 1.2em;">${name}</strong><br>
+                            <span style="color: #4CAF50; font-size: 1.5em; font-weight: bold;">₹${price.toLocaleString()}</span><br>
+                            <small style="color: #666;">Store: ${store} | Savings: ₹${savings.toLocaleString()}</small>
+                        </div>
+
+                        <div style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <strong>Your Plan Benefits:</strong><br>
+                            ${userTier === 'free' ? '🎁 15% AI-negotiated discount applied' :
+                              userTier === 'pro' ? '🚀 25% Pro exclusive discount applied' :
+                              '🏢 30% Business elite discount applied'}
+                        </div>
+
+                        <button onclick="demoPurchase()" style="background: #4CAF50; color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: bold;">
+                            🎯 Experience AI Purchase
+                        </button>
+
+                        <button onclick="this.parentElement.style.display='none'" style="background: #666; color: white; border: none; padding: 8px 15px; border-radius: 15px; cursor: pointer; margin-left: 10px; font-size: 12px;">
+                            Close
+                        </button>
+                    </div>
+                `;
+
+                // Find the result div and add the info after it
+                const resultDiv = document.getElementById(divId);
+                if (resultDiv) {
+                    // Remove any existing product info
+                    const existingInfo = resultDiv.querySelector('.product-info-display');
+                    if (existingInfo) {
+                        existingInfo.remove();
+                    }
+
+                    // Add new product info
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'product-info-display';
+                    infoDiv.innerHTML = infoHTML;
+                    resultDiv.appendChild(infoDiv);
+                }
+
+            } catch (error) {
+                console.error('Error showing product info:', error);
+                alert('Sorry, there was an error displaying the product details.');
+            }
         }
 
         function getEmojiForCategory(category) {
