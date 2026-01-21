@@ -1,24 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "npm install",
+  "buildCommand": "npm run build",
   "env": {
-    "MONGODB_URI": "@mongodb_uri",
-    "HUGGINGFACE_API_TOKEN": "@huggingface_token",
-    "RAINFOREST_API_KEY": "@rainforest_key",
-    "OPENAI_API_KEY": "@openai_key",
-    "JWT_SECRET": "@jwt_secret",
-    "CUELINKS_API_KEY": "@cuelinks_key"
-  },
-  "functions": {
-    "api/**/*.js": {
-      "memory": 1024,
-      "maxDuration": 30
-    }
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    }
-  ]
+    "NEXT_PUBLIC_API_URL": "@api_url"
+  }
 }
