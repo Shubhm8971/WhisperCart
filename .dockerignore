@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+.next
+dist
+build
+.git
+.gitignore
+README.md
+.env
+.DS_Store
+*.html
+*.md
+uploads/
+.venv/
+WhisperCart/
+flask_backend/
