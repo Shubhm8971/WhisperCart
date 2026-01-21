@@ -4,26 +4,13 @@
   "description": "AI-powered shopping assistant with deal negotiation",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "node backend/server.js",
+    "dev": "cd backend && npm run dev",
+    "build": "echo 'No build needed for Express backend'",
+    "test": "cd backend && npm test"
   },
   "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "express": "^4.18.2",
-    "mongodb": "^6.3.0",
-    "mongoose": "^8.0.0",
-    "node-fetch": "^2.6.7",
-    "dotenv": "^16.3.1",
-    "axios": "^1.6.2",
-    "amazon-paapi": "^3.1.0"
-  },
-  "devDependencies": {
-    "eslint": "^8.0.0",
-    "eslint-config-next": "^14.0.0"
+    "dotenv": "^16.3.1"
   },
   "engines": {
     "node": "18.x",
