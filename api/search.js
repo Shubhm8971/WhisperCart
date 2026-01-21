@@ -3,7 +3,7 @@ const config = require('../backend/config');
 const rainforestService = require('../backend/utils/rainforestService');
 const cuelinksService = require('../backend/utils/cuelinksService');
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,6 +13,7 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
+  }
   }
 
   try {
