@@ -22,6 +22,7 @@ const notificationRoutes = require('./routes/notifications');
 const compareRoutes = require('./routes/compare');
 const privacyRoutes = require('./routes/privacy');
 const authRoutes = require('./routes/auth');
+const preferencesRoutes = require('./routes/preferences');
 
 const app = express();
 const port = 3002;
@@ -54,6 +55,7 @@ async function startServer(mongoUri) {
 
   // --- USE ROUTES ---
   app.use('/api/auth', authRoutes);
+  app.use('/api/preferences', preferencesRoutes);
   app.use('/transcribe', transcribeRoutes);
   app.use('/search', searchRoutes);
   app.use('/history', historyRoutes);
@@ -68,7 +70,7 @@ async function startServer(mongoUri) {
     app.listen(port, async () => {
       console.log(`Server listening at http://localhost:${port}`);
 
-      try {
+      /* try {
         console.log('Starting public tunnel...');
         const tunnel = await localtunnel({ port: port });
         console.log(`Public Tunnel URL: ${tunnel.url}`);
@@ -99,7 +101,7 @@ export default API_URL;`;
         });
       } catch (err) {
         console.error('Failed to start public tunnel:', err);
-      }
+      } */
     });
   }
   return app; // Return the configured app instance

@@ -7,6 +7,7 @@ const llmService = require('../utils/llmService');
 const config = require('../config');
 const History = require('../models/History'); // Import History model
 const Notification = require('../models/Notification'); // Import Notification model
+const authenticate = require('../middleware/auth'); // Import auth middleware
 
 const upload = multer({ dest: 'uploads/' });
 const deepgram = createClient(config.deepgramApiKey);

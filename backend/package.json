@@ -1,11 +1,12 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "WhisperCart Backend API - AI-Powered Shopping Assistant",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",

@@ -1,18 +1,42 @@
 {
   "expo": {
-    "extra": {
-      "eas": {
-        "projectId": "5b1cd429-b4e4-4aac-87a2-e63847ae804d"
-      }
+    "name": "WhisperCart",
+    "slug": "whispercart",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1976d2"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
+      "supportsTablet": true,
       "bundleIdentifier": "com.shubhm8971.whispercart",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#1976d2"
+      },
       "package": "com.shubhm8971.whispercart"
-    }
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "scheme": "whispercart",
+    "extra": {
+      "eas": {
+        "projectId": "5b1cd429-b4e4-4aac-87a2-e63847ae804d"
+      }
+    },
+    "owner": "shubhm8971"
   }
 }

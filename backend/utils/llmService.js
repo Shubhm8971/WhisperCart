@@ -9,16 +9,8 @@ console.log('Zero-Cost AI Intent Service Loaded');
 async function extractIntentWithLLM(text) {
   console.log('[v5.2] Starting Intent Detection on:', text);
 
-  // Try HuggingFace first (Free Tier)
-  if (config.huggingfaceToken) {
-    try {
-      return await extractIntentWithHuggingFace(text);
-    } catch (error) {
-      console.warn('HuggingFace failed/busy, using Smart Local engine...');
-    }
-  }
-
-  // Final fallback to our highly optimized local engine
+  // Force use of the highly optimized local engine for stability
+  console.log('Forcing use of Smart Local engine...');
   return fallbackIntentExtraction(text);
 }
 
@@ -124,7 +116,6 @@ function fallbackIntentExtraction(text) {
   }
 
   // 1. Advanced Product Category Detection
-  if (action === 'search') {
     // Electronics & Tech
     if (lowerText.match(/watch|apple watch|galaxy watch|smartwatch|fitness tracker/)) {
       product = 'Smartwatch';
@@ -148,8 +139,13 @@ function fallbackIntentExtraction(text) {
 
     // Fashion & Footwear
     else if (lowerText.match(/shoe|sneaker|running shoe|nike|adidas|puma|footwear/)) {
-      product = 'Running Shoes';
-      if (lowerText.includes('running') || lowerText.includes('jog')) features.push('running');
+      if (lowerText.includes('running')) {
+        product = 'Running Shoes';
+        features.push('running');
+      } else {
+        product = 'Shoes'; // Default to 'Shoes'
+      }
+      console.log(`[GEMINI DEBUG] Product explicitly set to: ${product}`);
       if (lowerText.includes('casual')) features.push('casual');
     } else if (lowerText.match(/croc|clog|crocs/)) {
       product = 'Crocs';
@@ -209,7 +205,6 @@ function fallbackIntentExtraction(text) {
         product = productMatch[1].trim();
       }
     }
-  }
 
   // 2. Enhanced Brand Detection (50+ brands)
   const brands = [

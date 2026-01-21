@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>WhisperCart Mobile</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="WhisperCart">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f2f2f7;
+            color: #000;
+            line-height: 1.4;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            background: linear-gradient(135deg, #007AFF, #5856D6);
+            color: white;
+            border-radius: 16px;
+            margin: -20px -20px 30px -20px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+        
+        .input-group textarea {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e5e5ea;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.2s;
+        }
+        
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #007AFF;
+        }
+        
+        .btn {
+            width: 100%;
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn:hover {
+            background: #0056CC;
+        }
+        
+        .btn:disabled {
+            background: #8e8e93;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #8e8e93;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f2f2f7;
+            border-radius: 12px;
+            border-left: 4px solid #007AFF;
+        }
+        
+        .result h3 {
+            margin-bottom: 12px;
+            color: #1d1d1f;
+        }
+        
+        .product-list {
+            background: #e3f2fd;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 12px 0;
+            border: 1px solid #bbdefb;
+        }
+        
+        .product-list strong {
+            color: #1976d2;
+        }
+        
+        .json-output {
+            background: #1d1d1f;
+            color: #f2f2f7;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 12px;
+        }
+        
+        .history-item {
+            background: white;
+            border: 1px solid #e5e5ea;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+        
+        .history-item strong {
+            color: #007AFF;
+        }
+        
+        .history-item .time {
+            color: #8e8e93;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+        
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            background: white;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .tab.active {
+            background: #007AFF;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8e8e93;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .header {
+                margin: -16px -16px 24px -16px;
+                padding: 16px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛒 WhisperCart</h1>
+            <p>Extract products from your voice commands</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('query')">Query</button>
+            <button class="tab" onclick="showTab('history')">History</button>
+        </div>
+        
+        <div id="query-tab" class="tab-content active">
+            <div class="card">
+                <div class="input-group">
+                    <label for="query">What do you want to buy?</label>
+                    <textarea id="query" placeholder="e.g., I want Sony Xperia phone and Sony TV"></textarea>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="font-size: 14px; color: #8e8e93; margin-bottom: 8px; display: block;">Try these examples:</label>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        <button onclick="setQuery('I want Nike shoes and Adidas bag')" style="background: #f2f2f7; color: #007AFF; border: 1px solid #e5e5ea; padding: 8px 12px; border-radius: 8px; font-size: 12px; cursor: pointer;">Nike shoes + Adidas bag</button>
+                        <button onclick="setQuery('Buy a Samsung phone and Apple laptop')" style="background: #f2f2f7; color: #007AFF; border: 1px solid #e5e5ea; padding: 8px 12px; border-radius: 8px; font-size: 12px; cursor: pointer;">Samsung phone + Apple laptop</button>
+                        <button onclick="setQuery('I need a red shirt and blue jeans')" style="background: #f2f2f7; color: #007AFF; border: 1px solid #e5e5ea; padding: 8px 12px; border-radius: 8px; font-size: 12px; cursor: pointer;">Red shirt + Blue jeans</button>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn" id="extractBtn" onclick="extractProducts()" style="flex: 1;">Extract Products</button>
+                    <button class="btn" id="voiceBtn" onclick="startVoiceInput()" style="background: #34C759; flex: 0 0 auto; padding: 16px 20px;">🎤</button>
+                </div>
+                
+                <div id="loading" class="loading" style="display: none;">
+                    <div>🔄 Extracting products...</div>
+                </div>
+                
+                <div id="result" class="result" style="display: none;">
+                    <h3>📦 Extracted Products</h3>
+                    <div id="productList" class="product-list"></div>
+                    <details>
+                        <summary style="cursor: pointer; margin-top: 12px; color: #007AFF;">View Full Response</summary>
+                        <div id="jsonOutput" class="json-output"></div>
+                    </details>
+                </div>
+            </div>
+        </div>
+        
+        <div id="history-tab" class="tab-content">
+            <div class="card">
+                <button class="btn" onclick="loadHistory()" style="margin-bottom: 20px;">🔄 Refresh History</button>
+                <div id="history"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://192.168.31.180:5000';
+        
+        // Voice input functionality
+        let recognition = null;
+        
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                recognition.onstart = function() {
+                    document.getElementById('voiceBtn').innerHTML = '🔴';
+                    document.getElementById('voiceBtn').style.background = '#FF3B30';
+                    document.getElementById('voiceBtn').disabled = true;
+                };
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('query').value = transcript;
+                    document.getElementById('voiceBtn').innerHTML = '🎤';
+                    document.getElementById('voiceBtn').style.background = '#34C759';
+                    document.getElementById('voiceBtn').disabled = false;
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    document.getElementById('voiceBtn').innerHTML = '🎤';
+                    document.getElementById('voiceBtn').style.background = '#34C759';
+                    document.getElementById('voiceBtn').disabled = false;
+                    alert('Voice input failed. Please try again.');
+                };
+                
+                recognition.onend = function() {
+                    document.getElementById('voiceBtn').innerHTML = '🎤';
+                    document.getElementById('voiceBtn').style.background = '#34C759';
+                    document.getElementById('voiceBtn').disabled = false;
+                };
+            }
+        }
+        
+        function startVoiceInput() {
+            if (!recognition) {
+                initSpeechRecognition();
+            }
+            
+            if (recognition) {
+                try {
+                    recognition.start();
+                } catch (error) {
+                    console.error('Error starting speech recognition:', error);
+                    alert('Voice input not supported or blocked. Please type your query instead.');
+                }
+            } else {
+                alert('Voice input not supported in this browser. Please type your query instead.');
+            }
+        }
+        
+        function setQuery(text) {
+            document.getElementById('query').value = text;
+        }
+        
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Load history when switching to history tab
+            if (tabName === 'history') {
+                loadHistory();
+            }
+        }
+        
+        async function extractProducts() {
+            const query = document.getElementById('query').value.trim();
+            if (!query) {
+                alert('Please enter a query');
+                return;
+            }
+            
+            const extractBtn = document.getElementById('extractBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            extractBtn.disabled = true;
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/extract`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: query })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Display results
+                const productList = document.getElementById('productList');
+                const jsonOutput = document.getElementById('jsonOutput');
+                
+                if (data.products && data.products.length > 0) {
+                    const productNames = data.products.map(p => p.product).join(', ');
+                    productList.innerHTML = `<strong>Products found:</strong> ${productNames}`;
+                } else {
+                    productList.innerHTML = '<strong>No products found</strong>';
+                }
+                
+                jsonOutput.textContent = JSON.stringify(data, null, 2);
+                result.style.display = 'block';
+                
+                // Auto-refresh history
+                loadHistory();
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+                console.error('Error:', error);
+            } finally {
+                extractBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+        
+        async function loadHistory() {
+            const historyDiv = document.getElementById('history');
+            historyDiv.innerHTML = '<div class="loading">Loading history...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/history`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.queries && data.queries.length > 0) {
+                    historyDiv.innerHTML = data.queries.map(query => `
+                        <div class="history-item">
+                            <strong>Query:</strong> ${query.raw_text}<br>
+                            <strong>Products:</strong> ${query.extracted_json.products.map(p => p.product).join(', ') || 'None'}<br>
+                            <div class="time">${new Date(query.created_at).toLocaleString()}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    historyDiv.innerHTML = `
+                        <div class="empty-state">
+                            <h3>No queries yet</h3>
+                            <p>Make a query in the Query tab to see history here</p>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                historyDiv.innerHTML = `<div class="empty-state"><h3>Error loading history</h3><p>${error.message}</p></div>`;
+                console.error('Error:', error);
+            }
+        }
+        
+        // Load history on page load
+        window.onload = function() {
+            loadHistory();
+        };
+    </script>
+</body>
+</html>

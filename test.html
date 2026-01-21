@@ -4,75 +4,938 @@
     <title>WhisperCart Backend Test</title>
 </head>
 <body>
-    <h1>WhisperCart Registration Test</h1>
-    <form id="registerForm">
-        <input type="text" id="username" placeholder="Username" required>
-        <input type="email" id="email" placeholder="Email" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <button type="submit">Register</button>
-    </form>
-    <div id="result"></div>
+    <!-- Onboarding Modal -->
+    <div id="onboardingModal" class="modal-overlay" style="display: block;">
+        <div class="modal-content onboarding-modal">
+            <div class="onboarding-header">
+                <h1>🎉 Welcome to WhisperCart!</h1>
+                <p>Your AI-Powered Shopping Assistant</p>
+            </div>
+
+            <div class="onboarding-steps">
+                <div class="step active" data-step="1">
+                    <div class="step-icon">🎤</div>
+                    <h3>Voice Shopping</h3>
+                    <p>Simply speak what you want to buy. Our AI understands your needs and finds the best deals.</p>
+                    <div class="example">"I want comfortable running shoes under ₹3000"</div>
+                </div>
+
+                <div class="step" data-step="2">
+                    <div class="step-icon">🤖</div>
+                    <h3>AI Deal Finder</h3>
+                    <p>Our AI negotiates better prices and finds deals across multiple stores automatically.</p>
+                    <div class="example">Save ₹500-2000 on every purchase</div>
+                </div>
+
+                <div class="step" data-step="3">
+                    <div class="step-icon">📊</div>
+                    <h3>Smart Dashboard</h3>
+                    <p>Track your shopping history, set preferences, and get personalized recommendations.</p>
+                    <div class="example">Your shopping assistant learns your preferences</div>
+                </div>
+
+                <div class="step" data-step="4">
+                    <div class="step-icon">🛒</div>
+                    <h3>Multi-Store Search</h3>
+                    <p>Compare prices from Amazon, Flipkart, Meesho, and more in one place.</p>
+                    <div class="example">Best price guaranteed</div>
+                </div>
+            </div>
+
+            <div class="onboarding-navigation">
+                <button id="prevBtn" class="nav-btn" disabled>← Previous</button>
+                <div class="step-indicators">
+                    <span class="indicator active" data-step="1"></span>
+                    <span class="indicator" data-step="2"></span>
+                    <span class="indicator" data-step="3"></span>
+                    <span class="indicator" data-step="4"></span>
+                </div>
+                <button id="nextBtn" class="nav-btn">Next →</button>
+            </div>
+
+            <div class="onboarding-actions">
+                <button id="skipBtn" class="skip-btn">Skip Tour</button>
+                <button id="startBtn" class="start-btn" style="display: none;">Get Started! 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainApp" style="display: none;">
+        <h1>WhisperCart - Your AI Shopping Assistant</h1>
+        <form id="registerForm">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Register</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <style>
+        /* Onboarding Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .onboarding-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .onboarding-header h1 {
+            color: #1976d2;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .onboarding-header p {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .onboarding-steps {
+            margin-bottom: 30px;
+        }
+
+        .step {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            border: 2px solid transparent;
+        }
+
+        .step.active {
+            display: block;
+            border-color: #1976d2;
+            background: white;
+        }
+
+        .step-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .step h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .step p {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .example {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 8px;
+            font-style: italic;
+            color: #1976d2;
+            font-weight: bold;
+        }
+
+        .onboarding-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #1565c0;
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .step-indicators {
+            display: flex;
+            gap: 8px;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: background 0.3s;
+        }
+
+        .indicator.active {
+            background: #1976d2;
+        }
+
+        .onboarding-actions {
+            text-align: center;
+        }
+
+        .skip-btn {
+            background: transparent;
+            color: #666;
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .start-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .start-btn:hover {
+            background: #45a049;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 20px;
+                margin: 20px;
+            }
+
+            .onboarding-header h1 {
+                font-size: 2em;
+            }
+
+            .step-icon {
+                font-size: 2.5em;
+            }
+
+            .onboarding-navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-btn {
+                width: 100%;
+                margin: 0;
+            }
+        }
+    </style>
 
     <script>
-        const API_URL = 'http://localhost:3002';
+        // Demo mode - no backend required!
+        const API_URL = 'demo';
+        let demoUser = null;
+        let demoToken = null;
 
-        // Test login function
+        // Mock API functions
+        async function demoRegister(userData) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    demoUser = {
+                        id: Date.now(),
+                        username: userData.username,
+                        email: userData.email
+                    };
+                    demoToken = 'demo-jwt-' + Date.now();
+                    resolve({
+                        message: 'User registered successfully',
+                        token: demoToken,
+                        user: demoUser
+                    });
+                }, 500);
+            });
+        }
+
+        async function demoLogin(credentials) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    if (demoUser && demoUser.email === credentials.email) {
+                        resolve({
+                            message: 'Login successful',
+                            token: demoToken,
+                            user: demoUser
+                        });
+                    } else {
+                        demoUser = {
+                            id: Date.now(),
+                            username: credentials.email.split('@')[0],
+                            email: credentials.email
+                        };
+                        demoToken = 'demo-jwt-' + Date.now();
+                        resolve({
+                            message: 'Login successful',
+                            token: demoToken,
+                            user: demoUser
+                        });
+                    }
+                }, 500);
+            });
+        }
+
+        async function demoLoadPreferences() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        data: {
+                            favoriteCategories: ['Running Shoes', 'Sports Wear', 'Electronics'],
+                            favoriteBrands: ['Nike', 'Adidas', 'Samsung'],
+                            preferredStores: ['Amazon', 'Flipkart', 'Meesho'],
+                            budgetRanges: { min: 1000, max: 50000 },
+                            notificationsEnabled: true
+                        }
+                    });
+                }, 300);
+            });
+        }
+
+        async function demoLoadHistory() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        data: {
+                            voiceSearches: [
+                                {
+                                    detected_intent: {
+                                        product: 'running shoes',
+                                        budget: 3000,
+                                        action: 'search'
+                                    },
+                                    timestamp: new Date().toISOString()
+                                },
+                                {
+                                    detected_intent: {
+                                        product: 'smartphone',
+                                        budget: 15000,
+                                        action: 'search'
+                                    },
+                                    timestamp: new Date(Date.now() - 86400000).toISOString()
+                                }
+                            ],
+                            productSearches: [
+                                {
+                                    query: 'nike air max',
+                                    results_count: 12,
+                                    budget: 5000,
+                                    timestamp: new Date().toISOString()
+                                }
+                            ]
+                        }
+                    });
+                }, 300);
+            });
+        }
+
+        async function demoLoadAnalytics() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        data: {
+                            total_voice_searches: 24,
+                            total_product_searches: 18,
+                            total_savings: 5200,
+                            total_negotiations: 7,
+                            voice_searches_today: 3,
+                            negotiations_this_week: 2,
+                            avg_negotiation_savings: 743
+                        }
+                    });
+                }, 300);
+            });
+        }
+
+        async function demoVoiceSearch() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        action: 'search',
+                        product: 'running shoes',
+                        budget: 3000,
+                        features: ['comfortable', 'durable', 'lightweight']
+                    });
+                }, 800);
+            });
+        }
+
+        async function demoProductSearch() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve([
+                        {
+                            name: 'Nike Air Zoom Pegasus',
+                            price: '₹4,299',
+                            store: 'Amazon',
+                            rating: 4.6,
+                            image: 'https://via.placeholder.com/150/0066cc/white?text=Nike+Shoes',
+                            affiliate_link: '#'
+                        },
+                        {
+                            name: 'Adidas Ultraboost 22',
+                            price: '₹8,999',
+                            store: 'Flipkart',
+                            rating: 4.4,
+                            image: 'https://via.placeholder.com/150/cc0000/white?text=Adidas+Shoes',
+                            affiliate_link: '#'
+                        },
+                        {
+                            name: 'Puma Deviate Nitro',
+                            price: '₹6,499',
+                            store: 'Meesho',
+                            rating: 4.2,
+                            image: 'https://via.placeholder.com/150/00cc66/white?text=Puma+Shoes',
+                            affiliate_link: '#'
+                        }
+                    ]);
+                }, 600);
+            });
+        }
+
+        // Onboarding functionality
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        function initOnboarding() {
+            updateStepDisplay();
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            document.getElementById('nextBtn').addEventListener('click', nextStep);
+            document.getElementById('prevBtn').addEventListener('click', prevStep);
+            document.getElementById('skipBtn').addEventListener('click', skipOnboarding);
+            document.getElementById('startBtn').addEventListener('click', startApp);
+        }
+
+        function updateStepDisplay() {
+            // Hide all steps
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            // Show current step
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+
+            // Update indicators
+            document.querySelectorAll('.indicator').forEach((indicator, index) => {
+                indicator.classList.toggle('active', index + 1 === currentStep);
+            });
+
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentStep === 1;
+            document.getElementById('nextBtn').textContent = currentStep === totalSteps ? 'Finish' : 'Next →';
+
+            // Show start button on last step
+            document.getElementById('startBtn').style.display = currentStep === totalSteps ? 'inline-block' : 'none';
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateStepDisplay();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepDisplay();
+            }
+        }
+
+        function skipOnboarding() {
+            startApp();
+        }
+
+        function startApp() {
+            // Hide onboarding modal
+            document.getElementById('onboardingModal').style.display = 'none';
+            // Show main app
+            document.getElementById('mainApp').style.display = 'block';
+
+            // Save onboarding completion to localStorage
+            localStorage.setItem('onboardingCompleted', 'true');
+        }
+
+        // Check if onboarding was already completed
+        function checkOnboardingStatus() {
+            const completed = localStorage.getItem('onboardingCompleted');
+            if (completed) {
+                startApp();
+            } else {
+                initOnboarding();
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', checkOnboardingStatus);
+
+        // Test login function (DEMO MODE)
         async function testLogin() {
             const result = document.getElementById('result');
             result.innerHTML = '<div style="background: #e3f2fd; padding: 20px; border-radius: 8px;"><h3>🔐 Testing Login...</h3></div>';
 
             try {
-                const response = await fetch(`${API_URL}/api/auth/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: 'whisper@test.com',
-                        password: 'whisper123'
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    result.innerHTML = `
-                        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px;">
-                            <h3 style="color: #2e7d32;">✅ Login Successful!</h3>
-                            <p><strong>Token received:</strong> ${data.token.substring(0, 50)}...</p>
-                            <p>In the real app, you'd now access:</p>
-                            <ul style="text-align: left;">
-                                <li>🏠 Main shopping dashboard</li>
-                                <li>🎤 Voice shopping interface</li>
-                                <li>🔒 Privacy settings</li>
-                                <li>📊 Shopping history</li>
-                            </ul>
-                            <button onclick="testVoiceShopping()" style="background: #ff9800; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px;">Test Voice Shopping 🎤</button>
-                            <button onclick="testProductSearch()" style="background: #4caf50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Test Product Search 🛒</button>
-                        </div>
-                    `;
-                    localStorage.setItem('token', data.token);
-                } else {
-                    result.innerHTML = `<span style="color: red;">❌ Login failed: ${data.error || 'Unknown error'}</span>`;
-                }
+                const data = await demoLogin({ email: 'whisper@test.com', password: 'whisper123' });
+                result.innerHTML = `
+                    <div style="background: #e8f5e8; padding: 20px; border-radius: 8px;">
+                        <h3 style="color: #2e7d32;">✅ Login Successful!</h3>
+                        <p><strong>Token received:</strong> ${data.token.substring(0, 50)}...</p>
+                        <p>In the real app, you'd now access:</p>
+                        <ul style="text-align: left;">
+                            <li>🏠 Main shopping dashboard</li>
+                            <li>🎤 Voice shopping interface</li>
+                            <li>🔒 Privacy settings</li>
+                            <li>📊 Shopping history</li>
+                        </ul>
+                        <button onclick="testVoiceShopping()" style="background: #ff9800; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px;">Test Voice Shopping 🎤</button>
+                        <button onclick="testProductSearch()" style="background: #4caf50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Test Product Search 🛒</button>
+                    </div>
+                `;
+                localStorage.setItem('token', data.token);
             } catch (error) {
-                result.innerHTML = `<span style="color: red;">❌ Network error: ${error.message}</span>`;
+                result.innerHTML = `<span style="color: red;">❌ Demo login failed: ${error.message}</span>`;
             }
         }
 
-        // Test voice shopping
+        // Test voice shopping (DEMO MODE)
         async function testVoiceShopping() {
             const result = document.getElementById('result');
             result.innerHTML = '<div style="background: #fff3e0; padding: 20px; border-radius: 8px;"><h3>🎤 Testing Voice Shopping...</h3></div>';
 
             try {
-                const response = await fetch(`${API_URL}/transcribe`, {
+                const data = await demoVoiceSearch();
+                result.innerHTML = `
+                    <div style="background: #e8f5e8; padding: 20px; border-radius: 8px;">
+                        <h3 style="color: #2e7d32;">🎤 Voice Shopping Success!</h3>
+                        <p><strong>Detected Intent:</strong></p>
+                        <ul style="text-align: left; background: #f5f5f5; padding: 10px; border-radius: 4px;">
+                            <li><strong>Action:</strong> ${data.action}</li>
+                            <li><strong>Product:</strong> ${data.product}</li>
+                            <li><strong>Budget:</strong> ₹${data.budget}</li>
+                            <li><strong>Features:</strong> ${data.features.join(', ')}</li>
+                        </ul>
+                        <p><em>In the real app, this would show product recommendations with AI-negotiated prices!</em></p>
+                    </div>
+                `;
+            } catch (error) {
+                result.innerHTML = `<span style="color: red;">❌ Demo voice search failed: ${error.message}</span>`;
+            }
+        }
+
+        // Test product search (DEMO MODE)
+        async function testProductSearch() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<div style="background: #e8f5e8; padding: 20px; border-radius: 8px;"><h3>🛒 Testing Product Search...</h3></div>';
+
+            try {
+                const data = await demoProductSearch();
+                result.innerHTML = `
+                    <div style="background: #e8f5e8; padding: 20px; border-radius: 8px;">
+                        <h3 style="color: #2e7d32;">🛒 Product Search Working!</h3>
+                        <p><strong>Search Results:</strong> ${data.length} products found</p>
+                        <div style="margin-top: 15px;">
+                            ${data.slice(0, 2).map(product => `
+                                <div style="background: white; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ddd;">
+                                    <strong>${product.name}</strong><br>
+                                    <span style="color: #1976d2;">${product.price}</span> at ${product.store}<br>
+                                    <small>⭐ ${product.rating}/5</small>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <p><em>In the real app, you'd see full product listings with purchase links!</em></p>
+                    </div>
+                `;
+            } catch (error) {
+                result.innerHTML = `<span style="color: red;">❌ Demo product search failed: ${error.message}</span>`;
+            }
+        }
+
+        // Show user dashboard
+        async function showDashboard() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first!');
+                return;
+            }
+
+            const result = document.getElementById('result');
+            result.innerHTML = `
+                <div style="background: #f5f5f5; padding: 30px; border-radius: 8px; margin-top: 20px;">
+                    <h2 style="color: #1976d2; margin-top: 0;">🏠 Your WhisperCart Dashboard</h2>
+
+                    <!-- Preferences Section -->
+                    <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h3 style="color: #333; margin-top: 0;">⚙️ Shopping Preferences</h3>
+                        <div id="preferencesContent">
+                            <p>Loading preferences...</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h3 style="color: #333; margin-top: 0;">🚀 Quick Actions</h3>
+                        <button onclick="testVoiceShopping()" style="background: #ff9800; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px;">Test Voice Shopping 🎤</button>
+                        <button onclick="testProductSearch()" style="background: #4caf50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px;">Test Product Search 🛒</button>
+                        <button onclick="testNegotiation()" style="background: #9c27b0; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Test AI Negotiation 🤝</button>
+                    </div>
+
+                    <!-- History & Analytics -->
+                    <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h3 style="color: #333; margin-top: 0;">📊 Your Shopping History</h3>
+                        <div id="historyContent">
+                            <p>Loading history...</p>
+                        </div>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h3 style="color: #333; margin-top: 0;">📈 Analytics</h3>
+                        <div id="analyticsContent">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                                <div style="text-align: center; padding: 15px; background: #e3f2fd; border-radius: 8px;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #1976d2;">0</div>
+                                    <div style="color: #666;">Voice Searches</div>
+                                </div>
+                                <div style="text-align: center; padding: 15px; background: #e8f5e8; border-radius: 8px;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #4caf50;">₹0</div>
+                                    <div style="color: #666;">Total Savings</div>
+                                </div>
+                                <div style="text-align: center; padding: 15px; background: #fff3e0; border-radius: 8px;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #ff9800;">0</div>
+                                    <div style="color: #666;">Products Found</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button onclick="logout()" style="background: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Logout</button>
+                    </div>
+                </div>
+            `;
+
+            // Load user preferences and history
+            loadUserPreferences();
+            loadUserHistory();
+            loadUserAnalytics();
+        }
+
+        // Load user preferences (DEMO MODE)
+        async function loadUserPreferences() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('preferencesContent').innerHTML = '<p style="color: orange;">No authentication token found. Please login first.</p>';
+                return;
+            }
+
+            console.log('Loading preferences with token:', token.substring(0, 20) + '...');
+
+            try {
+                const data = await demoLoadPreferences();
+                displayPreferences(data.data);
+            } catch (error) {
+                console.error('Error loading preferences:', error);
+                document.getElementById('preferencesContent').innerHTML = `<p style="color: red;">Error loading preferences: ${error.message}</p>`;
+            }
+        }
+
+        // Display preferences with edit functionality
+        function displayPreferences(prefs) {
+            const content = document.getElementById('preferencesContent');
+
+            content.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h4>Favorite Categories:</h4>
+                    <div id="categoriesList" style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;">
+                        ${prefs.favoriteCategories.map(cat =>
+                            `<span style="background: #e3f2fd; padding: 5px 10px; border-radius: 15px; font-size: 12px;">
+                                ${cat}
+                                <button onclick="removeFavorite('categories', '${cat}')" style="margin-left: 5px; border: none; background: none; color: #f44336; cursor: pointer;">×</button>
+                            </span>`
+                        ).join('')}
+                    </div>
+                    <input type="text" id="newCategory" placeholder="Add category (e.g., Smartphones)" style="padding: 5px; margin-right: 10px;">
+                    <button onclick="addFavorite('categories')" style="background: #1976d2; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Add</button>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4>Favorite Brands:</h4>
+                    <div id="brandsList" style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;">
+                        ${prefs.favoriteBrands.map(brand =>
+                            `<span style="background: #e8f5e8; padding: 5px 10px; border-radius: 15px; font-size: 12px;">
+                                ${brand}
+                                <button onclick="removeFavorite('brands', '${brand}')" style="margin-left: 5px; border: none; background: none; color: #f44336; cursor: pointer;">×</button>
+                            </span>`
+                        ).join('')}
+                    </div>
+                    <input type="text" id="newBrand" placeholder="Add brand (e.g., Nike)" style="padding: 5px; margin-right: 10px;">
+                    <button onclick="addFavorite('brands')" style="background: #4caf50; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Add</button>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4>Budget Range:</h4>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <label>Min: ₹<input type="number" id="budgetMin" value="${prefs.budgetRanges.min}" style="padding: 5px; width: 80px;"></label>
+                        <label>Max: ₹<input type="number" id="budgetMax" value="${prefs.budgetRanges.max}" style="padding: 5px; width: 80px;"></label>
+                        <button onclick="updateBudgetRange()" style="background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Update</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4>Preferred Stores:</h4>
+                    <select id="storeSelect" style="padding: 5px; margin-right: 10px;">
+                        <option value="">Select store...</option>
+                        <option value="Amazon">Amazon</option>
+                        <option value="Flipkart">Flipkart</option>
+                        <option value="Meesho">Meesho</option>
+                    </select>
+                    <button onclick="addPreferredStore()" style="background: #9c27b0; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Add Store</button>
+                    <div id="storesList" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;">
+                        ${prefs.preferredStores.map(store =>
+                            `<span style="background: #fce4ec; padding: 5px 10px; border-radius: 15px; font-size: 12px;">
+                                ${store}
+                                <button onclick="removeStore('${store}')" style="margin-left: 5px; border: none; background: none; color: #f44336; cursor: pointer;">×</button>
+                            </span>`
+                        ).join('')}
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Notifications:</h4>
+                    <label>
+                        <input type="checkbox" id="notificationsEnabled" ${prefs.notificationsEnabled ? 'checked' : ''}>
+                        Enable deal notifications
+                    </label>
+                    <button onclick="updateNotifications()" style="margin-left: 10px; background: #607d8b; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Save</button>
+                </div>
+            `;
+        }
+
+        // Add favorite category/brand
+        async function addFavorite(type) {
+            const token = localStorage.getItem('token');
+            const inputId = type === 'categories' ? 'newCategory' : 'newBrand';
+            const value = document.getElementById(inputId).value.trim();
+
+            if (!value) return alert('Please enter a value');
+
+            try {
+                const fieldName = type === 'categories' ? 'category' : type === 'brands' ? 'brand' : type.slice(0, -1);
+                const response = await fetch(`${API_URL}/api/preferences/favorites/${type}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ [fieldName]: value })
+                });
+
+                if (response.ok) {
+                    document.getElementById(inputId).value = '';
+                    loadUserPreferences(); // Refresh preferences
+                } else {
+                    alert('Failed to add favorite');
+                }
+            } catch (error) {
+                alert('Network error');
+            }
+        }
+
+        // Remove favorite
+        async function removeFavorite(type, value) {
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/api/preferences/favorites/${type}/${encodeURIComponent(value)}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    loadUserPreferences(); // Refresh preferences
+                } else {
+                    alert('Failed to remove favorite');
+                }
+            } catch (error) {
+                alert('Network error');
+            }
+        }
+
+        // Update budget range
+        async function updateBudgetRange() {
+            const token = localStorage.getItem('token');
+            const min = parseInt(document.getElementById('budgetMin').value);
+            const max = parseInt(document.getElementById('budgetMax').value);
+
+            if (min >= max) return alert('Min budget must be less than max');
+
+            try {
+                const response = await fetch(`${API_URL}/api/preferences`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        budgetRanges: { min, max }
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Budget range updated!');
+                } else {
+                    alert('Failed to update budget range');
+                }
+            } catch (error) {
+                alert('Network error');
+            }
+        }
+
+        // Add preferred store
+        async function addPreferredStore() {
+            const token = localStorage.getItem('token');
+            const store = document.getElementById('storeSelect').value;
+
+            if (!store) return alert('Please select a store');
+
+            try {
+                const response = await fetch(`${API_URL}/api/preferences`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        preferredStores: [...document.querySelectorAll('#storesList span')].map(span =>
+                            span.textContent.replace('×', '').trim()
+                        ).concat(store)
+                    })
+                });
+
+                if (response.ok) {
+                    loadUserPreferences(); // Refresh preferences
+                } else {
+                    alert('Failed to add store');
+                }
+            } catch (error) {
+                alert('Network error');
+            }
+        }
+
+        // Remove store
+        async function removeStore(store) {
+            const token = localStorage.getItem('token');
+            const currentStores = [...document.querySelectorAll('#storesList span')].map(span =>
+                span.textContent.replace('×', '').trim()
+            ).filter(s => s !== store);
+
+            try {
+                const response = await fetch(`${API_URL}/api/preferences`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        preferredStores: currentStores
+                    })
+                });
+
+                if (response.ok) {
+                    loadUserPreferences(); // Refresh preferences
+                } else {
+                    alert('Failed to remove store');
+                }
+            } catch (error) {
+                alert('Network error');
+            }
+        }
+
+        // Update notifications
+        async function updateNotifications() {
+            const token = localStorage.getItem('token');
+            const enabled = document.getElementById('notificationsEnabled').checked;
+
+            try {
+                const response = await fetch(`${API_URL}/api/preferences`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        notificationsEnabled: enabled
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Notification preferences updated!');
+                } else {
+                    alert('Failed to update notifications');
+                }
+            } catch (error) {
+                alert('Network error');
+            }
+        }
+
+        // Test negotiation
+        async function testNegotiation() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<div style="background: #f3e5f5; padding: 20px; border-radius: 8px;"><h3>🤝 Testing AI Negotiation...</h3></div>';
+
+            try {
+                const response = await fetch(`${API_URL}/negotiate`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        text: 'I want to buy Nike running shoes under 5000 rupees'
+                        product: {
+                            name: 'Nike Running Shoes',
+                            price: '3500'
+                        },
+                        budget: 3000,
+                        messages: [
+                            { sender: 'user', text: 'Can you give me a better price?' }
+                        ]
                     })
                 });
 
@@ -81,48 +944,156 @@
                 if (response.ok) {
                     result.innerHTML = `
                         <div style="background: #e8f5e8; padding: 20px; border-radius: 8px;">
-                            <h3 style="color: #2e7d32;">🎤 Voice Shopping Success!</h3>
-                            <p><strong>Detected Intent:</strong></p>
-                            <ul style="text-align: left; background: #f5f5f5; padding: 10px; border-radius: 4px;">
-                                <li><strong>Action:</strong> ${data.action}</li>
-                                <li><strong>Product:</strong> ${data.product}</li>
-                                <li><strong>Budget:</strong> ₹${data.budget}</li>
-                                <li><strong>Features:</strong> ${data.features.join(', ')}</li>
-                            </ul>
-                            <p><em>In the real app, this would show product recommendations with AI-negotiated prices!</em></p>
+                            <h3 style="color: #2e7d32;">🤝 AI Negotiation Success!</h3>
+                            <p><strong>AI Response:</strong> ${data.responseText}</p>
+                            ${data.proposedPrice ? `<p><strong>Proposed Price:</strong> ₹${data.proposedPrice}</p>` : ''}
+                            <p><em>In the real app, this would help you negotiate better deals!</em></p>
                         </div>
                     `;
                 } else {
-                    result.innerHTML = `<span style="color: red;">❌ Voice processing failed</span>`;
+                    result.innerHTML = `<span style="color: red;">❌ Negotiation failed</span>`;
                 }
             } catch (error) {
                 result.innerHTML = `<span style="color: red;">❌ Network error: ${error.message}</span>`;
             }
         }
 
-        // Test product search
-        async function testProductSearch() {
-            const result = document.getElementById('result');
-            result.innerHTML = '<div style="background: #e8f5e8; padding: 20px; border-radius: 8px;"><h3>🛒 Testing Product Search...</h3></div>';
+        // Load user history (DEMO MODE)
+        async function loadUserHistory() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
 
             try {
-                const response = await fetch(`${API_URL}/search?product=nike+shoes&budget=5000`);
+                const data = await demoLoadHistory();
+                displayHistory(data.data);
+            } catch (error) {
+                console.error('Error loading history:', error);
+                document.getElementById('historyContent').innerHTML = '<p style="color: red;">Error loading history</p>';
+            }
+        }
 
-                if (response.ok) {
-                    const data = await response.json();
-                    result.innerHTML = `
-                        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px;">
-                            <h3 style="color: #2e7d32;">🛒 Product Search Working!</h3>
-                            <p><strong>Search Results:</strong> ${data.length || 'Multiple'} products found</p>
-                            <p><em>In the real app, you'd see product listings with prices, ratings, and purchase links!</em></p>
+        // Load user analytics (DEMO MODE)
+        async function loadUserAnalytics() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const data = await demoLoadAnalytics();
+                displayAnalytics(data.data);
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+                // Still show analytics with zeros
+                displayAnalytics({
+                    total_voice_searches: 0,
+                    total_product_searches: 0,
+                    total_savings: 0,
+                    total_negotiations: 0,
+                    voice_searches_today: 0,
+                    negotiations_this_week: 0,
+                    avg_negotiation_savings: 0
+                });
+            }
+        }
+
+        // Display history
+        function displayHistory(historyData) {
+            const content = document.getElementById('historyContent');
+
+            if (!historyData.voiceSearches || historyData.voiceSearches.length === 0) {
+                content.innerHTML = '<p style="color: #666; font-style: italic;">No shopping history yet. Try some voice searches!</p>';
+                return;
+            }
+
+            let html = '<div style="max-height: 300px; overflow-y: auto;">';
+
+            // Voice Searches
+            if (historyData.voiceSearches.length > 0) {
+                html += '<h4 style="margin-top: 0; color: #ff9800;">🎤 Recent Voice Searches</h4>';
+                historyData.voiceSearches.forEach(search => {
+                    const date = new Date(search.timestamp).toLocaleString();
+                    html += `
+                        <div style="background: #fff3e0; padding: 10px; margin-bottom: 8px; border-radius: 6px; border-left: 4px solid #ff9800;">
+                            <div style="font-weight: bold; margin-bottom: 4px;">"${search.detected_intent.product || 'Unknown'}"</div>
+                            <div style="font-size: 12px; color: #666;">
+                                Budget: ₹${search.detected_intent.budget || 'N/A'} |
+                                Action: ${search.detected_intent.action} |
+                                ${date}
+                            </div>
                         </div>
                     `;
-                } else {
-                    result.innerHTML = `<span style="color: red;">❌ Product search failed</span>`;
-                }
-            } catch (error) {
-                result.innerHTML = `<span style="color: red;">❌ Network error: ${error.message}</span>`;
+                });
             }
+
+            // Product Searches
+            if (historyData.productSearches && historyData.productSearches.length > 0) {
+                html += '<h4 style="color: #4caf50;">🛒 Recent Product Searches</h4>';
+                historyData.productSearches.forEach(search => {
+                    const date = new Date(search.timestamp).toLocaleString();
+                    html += `
+                        <div style="background: #e8f5e8; padding: 10px; margin-bottom: 8px; border-radius: 6px; border-left: 4px solid #4caf50;">
+                            <div style="font-weight: bold; margin-bottom: 4px;">"${search.query}"</div>
+                            <div style="font-size: 12px; color: #666;">
+                                Results: ${search.results_count || 0} found |
+                                Budget: ₹${search.budget || 'N/A'} |
+                                ${date}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            html += '</div>';
+            content.innerHTML = html;
+        }
+
+        // Display analytics
+        function displayAnalytics(analytics) {
+            const content = document.getElementById('analyticsContent');
+
+            content.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                    <div style="text-align: center; padding: 15px; background: #e3f2fd; border-radius: 8px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #1976d2;">${analytics.total_voice_searches || 0}</div>
+                        <div style="color: #666;">Voice Searches</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: #e8f5e8; border-radius: 8px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #4caf50;">₹${analytics.total_savings || 0}</div>
+                        <div style="color: #666;">Total Savings</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: #fff3e0; border-radius: 8px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #ff9800;">${analytics.total_product_searches || 0}</div>
+                        <div style="color: #666;">Product Searches</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: #fce4ec; border-radius: 8px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #e91e63;">${analytics.total_negotiations || 0}</div>
+                        <div style="color: #666;">Negotiations</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                    <h4 style="margin-top: 0; color: #333;">📈 This Week</h4>
+                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                        <div style="text-align: center; min-width: 100px;">
+                            <div style="font-size: 18px; font-weight: bold; color: #1976d2;">${analytics.voice_searches_today || 0}</div>
+                            <div style="font-size: 12px; color: #666;">Today</div>
+                        </div>
+                        <div style="text-align: center; min-width: 100px;">
+                            <div style="font-size: 18px; font-weight: bold; color: #4caf50;">${analytics.negotiations_this_week || 0}</div>
+                            <div style="font-size: 12px; color: #666;">This Week</div>
+                        </div>
+                        <div style="text-align: center; min-width: 100px;">
+                            <div style="font-size: 18px; font-weight: bold; color: #ff9800;">₹${analytics.avg_negotiation_savings ? analytics.avg_negotiation_savings.toFixed(0) : 0}</div>
+                            <div style="font-size: 12px; color: #666;">Avg Savings</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token');
+            document.getElementById('result').innerHTML = '<div style="background: #fff3e0; padding: 20px; border-radius: 8px;"><h3>👋 Logged out successfully!</h3><p>You can register again or test other features.</p></div>';
         }
 
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
@@ -160,6 +1131,7 @@
                             </ul>
                             <p><em>In the real app, you'd be logged in and see the main shopping interface.</em></p>
                             <button onclick="testLogin()" style="background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Test Login →</button>
+                            <button onclick="showDashboard()" style="background: #4caf50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-left: 10px;">View Dashboard 🏠</button>
                         </div>
                     `;
                     console.log('Registration Success:', data);

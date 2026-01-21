@@ -22,6 +22,17 @@ const UserSchema = new mongoose.Schema({
     minlength: 6,
     select: false,
   },
+  preferences: {
+    favoriteCategories: [String],
+    favoriteBrands: [String],
+    budgetRanges: {
+      min: { type: Number, default: 0 },
+      max: { type: Number, default: 50000 }
+    },
+    preferredStores: [String],
+    notificationsEnabled: { type: Boolean, default: true },
+    createdAt: { type: Date, default: Date.now }
+  },
 });
 
 UserSchema.pre('save', async function () {
