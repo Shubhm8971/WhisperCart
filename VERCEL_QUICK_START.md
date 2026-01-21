@@ -19,11 +19,11 @@ git push
 
 ### **Step 3: Add Environment Variables (2 minutes)**
 ```
-MONGODB_URI=mongodb+srv://WhisperCart:.8m_tuMMqiP_Be5@whispercart.fls7te9.mongodb.net/?appName=WhisperCart
-HUGGINGFACE_API_TOKEN=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
-RAINFOREST_API_KEY=e23f1f971fd898e68948d13af762c94c
-OPENAI_API_KEY=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
-JWT_SECRET=whispercart-secret-2026
+MONGODB_URI=your_mongodb_uri
+HUGGINGFACE_API_TOKEN=your_huggingface_token
+RAINFOREST_API_KEY=your_rainforest_key
+OPENAI_API_KEY=your_openai_key
+JWT_SECRET=your_jwt_secret_here
 ```
 
 ### **Step 4: Test Endpoints**
