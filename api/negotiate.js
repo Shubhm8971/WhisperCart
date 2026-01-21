@@ -2,7 +2,7 @@
 const config = require('../backend/config');
 const llmService = require('../backend/utils/llmService');
 
-export default async (req, res) => {
+module.exports = async (req, res) => {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');

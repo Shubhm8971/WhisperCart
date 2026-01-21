@@ -1,10 +1,13 @@
-// api/health.js - Health check endpoint
-export default async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.status(200).json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
-  });
+module.exports = async (req, res) => {
+  try {
+    res.status(200).json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      service: 'WhisperCart API',
+      version: '1.0.0'
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
